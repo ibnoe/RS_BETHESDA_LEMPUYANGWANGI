@@ -1,0 +1,106 @@
+<?
+require_once("lib/visit_setting.php");
+$sql = 	"select a.*,to_char(a.tanggal_reg,'DD MON YYYY HH24:MI:SS')as tanggal_reg,f.layanan ".
+						"from c_visit_ri a ". 
+						"left join rsv0002 c on a.no_reg=c.id ".
+						"left join rs00006 d on d.id = a.no_reg ".
+						"left join rs00008 e on e.no_reg = a.no_reg ".
+						"left join rs00034 f on 'f.id' = e.item_id ".
+						"where a.no_reg='{$_GET['rg']}' and a.id_ri= '{$_GET["polinya"]}' and a.oid= '{$_GET["oid"]}' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>DATA SUHU, NADI, PERNAFASAN PASIEN</div>";
+			echo "</td></tr>";
+    		echo "<tr><td  valign=top>";
+    		$f = new ReadOnlyForm();
+	
+			$f->text($visit_ri_grafik_ibu["vis_1"],$d[4]);
+			$f->text($visit_ri_grafik_ibu["vis_2"],$d[5]);
+			$f->text($visit_ri_grafik_ibu["vis_3"],$d[6]);
+			$f->text($visit_ri_grafik_ibu["vis_4"],$d[7]."&nbsp;/Menit" );
+			$f->text($visit_ri_grafik_ibu["vis_5"],$d[8]."&nbsp;/Menit");
+			$f->text($visit_ri_grafik_ibu["vis_6"],$d[9]."&nbsp;&deg;C");
+			$f->title1("<U>MEDIKASI</U>");
+			if($d["vis_7"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_7"],$d[10]);
+			}else{}
+			if($d["vis_8"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_8"],$d[11]);
+			}else{}
+			if($d["vis_9"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_9"],$d[12]);
+			}else{}
+			if($d["vis_10"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_10"],$d[13]);
+			}else{}
+			if($d["vis_11"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_11"],$d[14]);
+			}else{}
+			$f->title1("<U>DOSIS</U>");
+			if($d["vis_12"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_12"],$d[15]);
+			}else{}
+			if($d["vis_13"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_13"],$d[16]);
+			}else{}
+			if($d["vis_14"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_14"],$d[17]);
+			}else{}
+			if($d["vis_15"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_15"],$d[18]);
+			}else{}
+			if($d["vis_16"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_16"],$d[19]);
+			}else{}
+			$f->title1("<U>PEMERIKSAAN LAIN</U>");
+			$f->text($visit_ri_grafik_ibu["vis_17"],$d[20]);
+			$f->text($visit_ri_grafik_ibu["vis_18"],$d[21]);
+			$f->text($visit_ri_grafik_ibu["vis_19"],$d[22]);
+			$f->text($visit_ri_grafik_ibu["vis_20"],$d[23]);
+			$f->text($visit_ri_grafik_ibu["vis_21"],$d[24]);
+			$f->execute();
+			echo "</td><td valign=top>";
+			$f = new ReadOnlyForm();
+			$f->text($visit_ri_grafik_ibu["vis_22"],$d[25]);
+			$f->text($visit_ri_grafik_ibu["vis_23"],$d[26]);
+			$f->text($visit_ri_grafik_ibu["vis_24"],$d[27]);
+			$f->text($visit_ri_grafik_ibu["vis_25"],$d[28]);
+			$f->text($visit_ri_grafik_ibu["vis_26"],$d[29]);
+			$f->text($visit_ri_grafik_ibu["vis_27"],$d[30]);
+			$f->title1("<U>DARAH</U>");
+			if($d["vis_28"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_28"],$d[31]);
+			}else{}
+			if($d["vis_29"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_29"],$d[32]);
+			}else{}
+			if($d["vis_30"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_30"],$d[33]);
+			}else{}
+			if($d["vis_31"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_31"],$d[34]);
+			}else{}
+			if($d["vis_32"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_ibu["vis_32"],$d[35]);
+			}else{}
+			$f->text($visit_ri_grafik_ibu["vis_33"],$d[36]);
+			$f->text($visit_ri_grafik_ibu["vis_34"],$d[37]);
+			$f->text($visit_ri_grafik_ibu["vis_35"],$d[38]);
+			$f->text($visit_ri_grafik_ibu["vis_36"],$d[39]."&nbsp;Kg");
+			$f->text($visit_ri_grafik_ibu["vis_37"],$d[40]);
+			$f->execute();	
+    		echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+
+?>

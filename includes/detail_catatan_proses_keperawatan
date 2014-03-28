@@ -1,0 +1,54 @@
+<?php
+require_once("lib/visit_setting.php");
+$sql = 	"select a.*,to_char(a.tanggal_reg,'DD MON YYYY HH24:MI:SS')as tanggal_reg,f.layanan,(g.nama)as merawat,(h.nama)as mengirim ".
+						"from c_visit_ri a left join rsv0002 c on a.no_reg=c.id 
+left join rs00006 d on  d.id  =  a.no_reg 
+left join rs00008 e on e.no_reg = a.no_reg  
+left join rs00034 f on CAST (f.id as character varying) =e.item_id 
+left join rs00017 g on a.vis_1 = 'g.id' 
+left join rs00017 h on a.vis_2 = 'h.id'".
+
+                "where a.no_reg='{$_GET['rg']}' and a.id_ri= '{$_GET["polinya"]}' and a.oid= '{$_GET["oid"]}' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>CATATAN PROSES KEPERAWATAN</div>";
+			echo "</td></tr>";
+    		echo "<tr><td  valign=top>";
+    		$f = new ReadOnlyForm();
+		
+			$f->title1("<U>ANAMNESA</U>","LEFT");
+			$f->text($visit_ri_proses_keperawatan["vis_1"],$d[4] );
+			$f->text($visit_ri_proses_keperawatan["vis_2"],$d[5] );
+			$f->text($visit_ri_proses_keperawatan["vis_3"],$d[6] );
+			$f->text($visit_ri_proses_keperawatan["vis_4"],$d[7] );
+			if($d["vis_5"] != ''){
+			$f->text($visit_ri_proses_keperawatan["vis_5"],$d[8] );
+			}else{}
+			if($d["vis_6"] != ''){
+			$f->text($visit_ri_proses_keperawatan["vis_6"],$d[9] );
+			}else{}
+			if($d["vis_7"] != ''){
+			$f->text($visit_ri_proses_keperawatan["vis_7"],$d[10] );
+			}else{}
+			if($d["vis_8"] != ''){
+			$f->text($visit_ri_proses_keperawatan["vis_8"],$d[11] );
+			}else{}
+			if($d["vis_9"] != ''){
+			$f->text($visit_ri_proses_keperawatan["vis_9"],$d[12] );
+			}else{}
+			
+			$f->execute();	
+    		echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+?>

@@ -1,0 +1,146 @@
+ <?php
+// Nugraha, Thu Apr 22 19:51:19 WIT 2004
+      // sfdn, 10-05-2004
+      // sfdn, 02-06-2004
+	// tokit, 07-07-2004
+	// sfdn, 17-12-2006
+	// Yudha, 5/15/2007
+	
+/* By YGR  */
+$jns_kasir = array(
+	"rj"=>"RAWAT JALAN", 
+	"ri"=>"RAWAT INAP",
+	"igd"=>"IGD",
+) ;
+$kasirnya = $_GET["kas"] ;
+// if ($_SESSION[uid] == "kasir2" || $_SESSION[uid] == "igd"|| $_SESSION[uid] == "kasir1"|| $_SESSION[uid] == "root") {
+
+
+if ($kasirnya) {
+/*End of By YGR */
+
+$PID = "335";
+$SC = $_SERVER["SCRIPT_NAME"];
+
+require_once("lib/dbconn.php");
+require_once("lib/form.php");
+require_once("lib/class.PgTable.php");
+require_once("lib/functions.php");
+ 
+$reg = (int) $_GET["rg"];
+$id_reg =  getfromtable("select to_number(id,'9999999999') as id FROM rs00006 where to_number(id,'9999999999') = $reg");
+//$id_reg2 =  getfromtable("select max(id) from rs00010 where no_reg = '$reg'");
+//$reg2 = $_GET["rg"];
+if ($reg > 0) {
+    if ($id_reg == 0)
+	
+        $reg = 0;
+        $msg = "Nomor registrasi tidak ditemukan. Masukkan kembali nomor registrasi.";
+    }
+}
+ 
+
+if (!$GLOBALS['print']){
+title("<img src='icon/kasir-2.gif' align='absmiddle' > KASIR ".$jns_kasir[$kasirnya]);
+    title_print("");
+    title_excel("335&tblstart=".$_GET['tblstart']);    } 
+
+//title("<img src='icon/kasir-2.gif' align='absmiddle' > KASIR ".$jns_kasir[$kasirnya]);
+
+echo "</br>";
+
+if ($reg > 0) {
+ 
+     echo "<DIV ALIGN=RIGHT OnClick='window.location=\"$SC?p=$PID&t1=$ts_check_in1&kas=$kasirnya\"'>".icon("back","Kembali")."</a></DIV>";
+
+    include("335.inc.php");
+
+    echo "<form name=Form3>";
+    echo "<input name=b1 type=button value='Identitas'        onClick='window.location=\"$SC?p=$PID&t1=$ts_check_in1&kas=$kasirnya&rg=".$_GET["rg"]."&sub=1\";'".($_GET["sub"] == "1" || $_GET["sub"] == "" ? " DISABLED" : "").">&nbsp;";
+    echo "<input name=b2 type=button value='Tindakan Medis'   onClick='window.location=\"$SC?p=$PID&t1=$ts_check_in1&kas=$kasirnya&rg=".$_GET["rg"]."&sub=2\";'".($_GET["sub"] == "2" ? " DISABLED" : "").">&nbsp;";
+    echo "<input name=b2 type=button value='Rincian Layanan/Tindakan Medis'  onClick='window.location=\"$SC?p=$PID&t1=$ts_check_in1&kas=$kasirnya&rg=".$_GET["rg"]."&sub=3\";'".($_GET["sub"] == "3" ? " DISABLED" : "").">&nbsp;";
+    echo "<input name=b2 type=button value='Pembayaran'       onClick='window.location=\"$SC?p=$PID&t1=$ts_check_in1&kas=$kasirnya&rg=".$_GET["rg"]."&sub=4\";'".($_GET["sub"] == "4" ? " DISABLED" : "").">&nbsp;";
+    echo "</form>";
+    
+    $sub = isset($_GET["sub"]) ? $_GET["sub"] : "4";
+    if (file_exists("includes/$PID.$sub.php")) include_once("includes/$PID.$sub.php");
+
+} else {
+    $f = new Form($SC, "GET", "NAME=Form1");
+    $f->PgConn = $con;
+    $f->hidden("p",$PID);
+    $f->hidden("kas",$kasirnya);
+    
+	echo "<DIV ALIGN=RIGHT>";
+	echo "<TABLE BORDER=0><FORM ACTION=$SC NAME=Form2><TR>";
+    echo "<INPUT TYPE=HIDDEN NAME=p VALUE=$PID >";
+    echo "<INPUT TYPE=HIDDEN NAME=kas VALUE='$kasirnya' >";        
+    echo "<TD >Pencarian : <INPUT TYPE=TEXT NAME=search VALUE='".$_GET["search"]."'></TD>";
+    echo "<TD><input onchange=\"Form2.submit();\" src=\"icon/ico_find.gif\" title=\"Cari\" type=\"image\"> </TD>";
+ 
+    echo "</TR></FORM></TABLE>";
+	echo "</DIV>";
+
+
+    $SQLSTR  = "select a.id, a.nama, a.mr_no, a.tgl_reg, a.pasien, c.tdesc, a.asal, a.statusbayar, a.tagih, a.bayar,a.sisa from rsv0012 a ";
+    $SQLSTR .=" left join rs00006 b on a.id = b.id  " ;
+    $SQLSTR .="  left join rs00001 c on b.status_akhir_pasien  = c.tc and c.tt = 'SAP' " ;
+	$what = $jns_kasir[$kasirnya] ;
+
+	$SQLWHERE  = "where a.rawat = '$what'  ";
+	
+	if ($kasirnya == "rj" ) {$SQLWHERE1 .= " AND upper(a.pasien) NOT LIKE('%DINAS%')";}
+	
+	$SQLWHERE2 = " and (upper(a.nama) LIKE '%".strtoupper($_GET[search])."%' or ".
+				 " a.mr_no like '%".$_GET[search]."%' or a.id like '%".$_GET[search]."%') ";
+	$SQLWHERE3 = " and (a.statusbayar like '%BELUM LUNAS%')";
+     
+$ORDERBY = " ORDER BY a.tgl_reg DESC";
+ 
+    if (!isset($_GET[sort])) {
+           $_GET[sort] = "a.tanggal_reg";
+           $_GET[order] = "asc";
+    }
+
+	echo "<br>";
+	$SQLINAP="select a.id, a.nama, a.mr_no, a.tgl_reg, a.pasien, c.tdesc, a.asal, a.statusbayar, 
+	a.tagih+(extract(day from current_timestamp - e.ts_check_in) * f.harga), 
+	a.bayar,a.sisa+(extract(day from current_timestamp - e.ts_check_in) * f.harga)
+	
+	from rsv0012 a 
+	left join rs00006 b on a.id = b.id 
+	left join rs00001 c on b.status_akhir_pasien = c.tc and c.tt = 'SAP' 
+	left join rs00010 e on e.no_reg=a.id
+	join rs00012 as g on e.bangsal_id = g.id
+	join rs00012 as f on substr(g.hierarchy,1,6) || '000000000' = f.hierarchy
+	where a.rawat = 'RAWAT INAP' and (upper(a.nama) LIKE '%%' or a.mr_no like '%%' or a.id like '%%') 
+	and (a.statusbayar like '%BELUM LUNAS%') and e.awal=1
+	group by a.id,a.nama,a.mr_no, a.tgl_reg, a.pasien, c.tdesc, a.asal, a.statusbayar, a.tagih, a.bayar,a.sisa,e.ts_check_in,f.harga
+	,a.tanggal_reg,e.no_reg";
+
+
+//echo "$SQLSTR $SQLWHERE $SQLWHERE1 $SQLWHERE2 $SQLWHERE3";
+    $t = new PgTable($con, "100%");
+	if ($kasirnya == "ri" ) {$t->SQL = "$SQLINAP";}
+	else{
+    $t->SQL = "$SQLSTR $SQLWHERE $SQLWHERE1 $SQLWHERE2 $SQLWHERE3";}
+    $t->ColHeader = array("NO.REG", "N A M A", "NO. MR", "TGL. REGISTRASI", "TIPE PASIEN","STATUS PASIEN","ASAL PASIEN","STATUS BAYAR","TAGIHAN","BAYAR","SISA");
+    $t->ShowRowNumber = true;
+    $t->setlocale("id_ID");
+    $t->RowsPerPage = $ROWS_PER_PAGE;
+    $t->ColAlign[0] = "CENTER";
+    $t->ColAlign[2] = "CENTER";
+   $t->ColAlign[3] = "CENTER";
+    $t->ColAlign[4] = "CENTER";
+   $t->ColAlign[5] = "CENTER";
+   $t->ColAlign[6] = "CENTER";
+    $t->ColAlign[7] = "CENTER";
+	 $t->ColAlign[8] = "CENTER";
+    $t->RowsPerPage = 20;
+    $t->ColFormatHtml[1] = "<A CLASS=TBL_HREF HREF='$SC?p=$PID"."&rg=<#0#>&sub=4"."&t1=$ts_check_in1"."&t2=$ts_check_in2".
+                            "&kas=$kasirnya". /* By Yudha */
+                            "'><#1#></A>";
+    $t->execute();
+}
+
+?>

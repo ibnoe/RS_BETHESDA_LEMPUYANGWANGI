@@ -1,0 +1,91 @@
+<?php
+session_start();
+require_once("../lib/dbconn.php");
+require_once("../lib/terbilang.php");
+
+
+$tgl_sekarang = date("d M Y", time());
+$sql = pg_query($con, "SELECT * FROM apotik_umum WHERE no_reg = '".$_GET['no_reg']."' ");
+
+$row  = pg_fetch_array($sql);
+?>    
+<HTML>
+    <HEAD>
+        <TITLE>Kwitansi Apotik Umum</TITLE>
+        <LINK rel='styleSheet' type='text/css' href='../cetak.css'>
+        <LINK rel='styleSheet' type='text/css' href='../invoice.css'>
+        <SCRIPT LANGUAGE="JavaScript">
+            <!-- Begin
+            function printWindow() {
+                bV = parseInt(navigator.appVersion);
+                if (bV >= 4) window.print();
+            }
+            //  End -->
+        </script>
+    </HEAD>
+
+<BODY TOPMARGIN=0 LEFTMARGIN=0 MARGINWIDTH=0 MARGINHEIGHT=0 />
+<table align=center >
+    <tr>
+        <td align="center" colspan="4" style="font-family: Tahoma; font-size: 16px; letter-spacing: 4px;"><b>KWITANSI APOTIK UMUM<br/> RS. SARILA HUSADA</b></u></td>
+    </tr>
+</table>
+<br/>
+<table border ="0" align=left cellpadding="0" cellspacing="0" style="font-family: Tahoma; font-size: 14px; letter-spacing: 4px;" width="100%">
+    <tr>
+        <td width="200">No. Kwitansi</td>
+        <td>: <? echo $row['no_reg']; ?></td>
+        <td></td>
+        <td align="right"><? echo $tgl_sekarang; ?></td>
+    </tr>
+    <tr>
+        <td>Nama</td>
+        <td>: <? echo $row['nama']; ?></td>
+        <td></td>
+        <td align="right"></td>
+    </tr>
+    <tr>
+        <td>Alamat</td>
+        <td>: <? echo $row['alamat']; ?></td>
+        <td></td>
+        <td align="right"></td>
+    </tr>
+</table>    
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<?php
+$sqlPembelian = pg_query($con, "SELECT SUM(jumlah) AS jumlah FROM apotik_umum  WHERE no_reg = '".$_GET['no_reg']."' ");
+$rowPembelian =pg_fetch_array($sqlPembelian);
+?>
+<table border ="0" align=left cellpadding="0" cellspacing="0" style="font-family: Tahoma; font-size: 16px; letter-spacing: 4px;">
+    <tr>
+        <td width="300">Sudah Terima dari </td>
+        <td>: <b><? echo $row['nama']; ?></b></td>
+    </tr>
+    <tr>
+        <td>Uang Sejumlah </td>
+        <td>: <b><? echo number_format($rowPembelian['jumlah'],2); ?></b></td>
+    </tr>
+    <tr>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="2">&nbsp;<b><? echo terbilang($rowPembelian['jumlah']); ?></b></td>
+    </tr>
+</table>    
+<table width="100%" BORDER="0" CLASS="" cellpadding="0" cellspacing="0" style="font-family: Tahoma; font-size: 15px; letter-spacing: 2px;">
+    <tr>
+        <td align="right"><u><b><font size="2"  face="Arial"><? echo $_SESSION["nama_usr"]; ?></b></u></td>
+    </tr>
+</table>
+
+        <SCRIPT LANGUAGE="JavaScript">
+            <!-- Begin
+            printWindow();
+            //  End -->
+        </script>
+    </body>
+</html>

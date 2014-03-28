@@ -1,0 +1,34 @@
+<?
+if ($GLOBALS['print']){
+    $ext = "disabled";
+}else {
+    $ext = "";
+}
+
+if (!isset($_GET['tanggal1D'])) {
+		$tanggal1D = date("d", time());
+		$tanggal1M = date("m", time());
+		$tanggal1Y = date("Y", time());
+		$tanggal2D = date("d", time());
+		$tanggal2M = date("m", time());
+		$tanggal2Y = date("Y", time());
+
+    $ts_check_in1 = date("Y-m-d", mktime(0,0,0,0,0,0));
+    $ts_check_in2 = date("Y-m-d", mktime(0,0,0,0,0,0));
+    $f->selectDate("tanggal1", "Dari Tanggal", getdate(mktime(0,0,0,$tanggal1M,$tanggal1D,$tanggal1Y)), $ext);
+    $f->selectDate("tanggal2", "s/d", getdate(mktime(0,0,0,$tanggal2M,$tanggal2D,$tanggal2Y)), $ext);
+		
+} else {
+	    
+    $tgl_sakjane = $_GET[tanggal2D] + 1;	
+
+    $ts_check_in1 = date("Y-m-d", mktime(0,0,0,$_GET["tanggal1M"],$_GET["tanggal1D"],$_GET["tanggal1Y"]));
+    $ts_check_in2 = date("Y-m-d", mktime(0,0,0,$_GET["tanggal2M"],$tgl_sakjane,$_GET["tanggal2Y"]));
+    $f->selectDate("tanggal1", "Dari Tanggal", getdate(mktime(0,0,0,$_GET["tanggal1M"],$_GET["tanggal1D"],$_GET["tanggal1Y"])), $ext);
+    $f->selectDate("tanggal2", "s/d", getdate(mktime(0,0,0,$_GET["tanggal2M"],$_GET["tanggal2D"],$_GET["tanggal2Y"])), $ext);
+
+    //echo "Xxx: $ts_check_in2"; exit();	
+}
+
+
+?>

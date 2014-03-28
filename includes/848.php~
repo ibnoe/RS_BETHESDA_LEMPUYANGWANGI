@@ -1,0 +1,148 @@
+<?php
+/***Me->-20130208***/
+
+$PID="848";
+$SC = $_SERVER["SCRIPT_NAME"];
+
+require_once("lib/dbconn.php");
+require_once("lib/form.php");
+require_once("lib/class.PgTable.php");
+require_once("lib/functions.php");
+
+
+if (empty($_GET[sure])) {
+if(isset($_GET["e"])) {
+    $r = pg_query($con, "select * from margin_apotik where margin_id = '".$_GET["e"]."'");
+    $n = pg_num_rows($r);
+    if($n > 0) $d = pg_fetch_object($r);
+    pg_free_result($r);
+    
+    echo "<DIV ALIGN=RIGHT><A HREF='$SC?p=$PID'>".icon("back","Kembali")."</a></DIV>";
+    if($n > 0) {
+    title("<B><font color='orange'>Edit Margin Apotik</B>");        
+        $f = new Form("actions/848.update.php", "POST");
+        $f->hidden("margin_id",$d->margin_id);
+        $f->text("margin_id","<B><font color='green'>KODE",3,3,$d->margin_id,"DISABLED");
+    } else {
+    title("<B><font color='green'>&nbsp;Margin Apotik</B>");    
+        $f = new Form("actions/848.insert.php");
+        $f->hidden("margin_id","new");
+        $f->text("margin_id","<B><font color='green'>KODE",12,12,"&lt;OTOMATIS&gt;","DISABLED");
+     }
+    
+    $f->PgConn = $con;
+    $f->selectSQL("f_kategori_id", "<B><font color='green'>Kategori Inventory","select '' as tc, '-- pilih kategori --' as tdesc union ".
+                  "select tc, tdesc from rs00001 where tt = 'GOB' and tc != '000'",
+                  $d->kategori_id);
+    $f->text("f_pm_car_drs","<B><font color='green'>Persen Margin Car dr. Sudjiyati",4,4,$d->pm_car_drs);
+    $f->text("f_tuslah_car_drs","<B><font color='green'>Tuslah Car dr. Sudjiyati",4,8,$d->tuslah_car_drs);
+
+    $f->text("f_pm_car_rsrj","<B><font color='green'>Persen Margin Car RS Rawat Jalan",4,4,$d->pm_car_rsrj);
+    $f->text("f_tuslah_car_rsrj","<B><font color='green'>Tuslah Car RS Rawat Jalan",4,8,$d->tuslah_car_rsrj);
+
+    $f->text("f_pm_car_rsri","<B><font color='green'>Persen Margin Car RS Rawat Inap",4,4,$d->pm_car_rsri);
+    $f->text("f_tuslah_car_rsri","<B><font color='green'>Tuslah Car RS Rawat Inap",4,8,$d->tuslah_car_rsri);
+
+    $f->text("f_pm_inhealth_drs","<B><font color='green'>Persen Margin Inhealth dr. Sudjiyati",4,4,$d->pm_inhealth_drs);
+    $f->text("f_tuslah_inhealth_drs","<B><font color='green'>Tuslah Inhealth dr. Sudjiyati",4,8,$d->tuslah_inhealth_drs);
+
+    $f->text("f_pm_inhealth_rs","<B><font color='green'>Persen Margin Inhealth RS",4,4,$d->pm_inhealth_rs);
+    $f->text("f_tuslah_inhealth_rs","<B><font color='green'>Tuslah Inhealth RS",4,8,$d->tuslah_inhealth_rs);
+
+    $f->text("f_pm_jam_ri","<B><font color='green'>Persen Margin Jamkesmas Rawat Jalan",4,4,$d->pm_jam_ri);
+    $f->text("f_tuslah_jam_ri","<B><font color='green'>Tuslah Jamkesmas Rawat Jalan",4,8,$d->tuslah_jam_ri);
+
+    $f->text("f_pm_jam_rj","<B><font color='green'>Persen Margin Jamkesmas Rawat Inap",4,4,$d->pm_jam_rj);
+    $f->text("f_tuslah_jam_rj","<B><font color='green'>Tuslah Jamkesmas Rawat Inap",4,8,$d->tuslah_jam_rj);
+
+    $f->text("f_pm_kry_kelinti","<B><font color='green'>Persen Margin Karyawan&Kel Inti",4,4,$d->pm_kry_kelinti);
+    $f->text("f_tuslah_kry_kelinti","<B><font color='green'>Tuslah Karyawan&Kel Inti",4,8,$d->tuslah_kry_kelinti);
+
+    $f->text("f_pm_kry_kelbesar","<B><font color='green'>Persen Margin Karyawan&Kel Besar",4,4,$d->pm_kry_kelbesar);
+    $f->text("f_tuslah_kry_kelbesar","<B><font color='green'>Tuslah Karyawan&Kel Besar",4,8,$d->tuslah_kry_kelbesar);
+
+    $f->text("f_pm_kry_kelgratisri","<B><font color='green'>Persen Margin Karyawan&Kel Gratis RI",4,4,$d->pm_kry_kelgratisri);
+    $f->text("f_tuslah_kry_kelgratisri","<B><font color='green'>Tuslah Karyawan&Kel Gratis RI",4,8,$d->tuslah_kry_kelgratisri);
+
+    $f->text("f_pm_kry_kelrespoli","<B><font color='green'>Persen Margin Karyawan&Kel Resep Poli",4,4,$d->pm_kry_kelrespoli);
+    $f->text("f_tuslah_kry_kelrespoli","<B><font color='green'>Tuslah Karyawan&Kel Resep Poli",4,8,$d->tuslah_kry_kelrespoli);
+
+    $f->text("f_pm_kry_kel","<B><font color='green'>Persen Margin Karyawan&Keluarga",4,4,$d->pm_kry_kel);
+    $f->text("f_tuslah_kry_kel","<B><font color='green'>Tuslah Karyawan&Keluarga",4,8,$d->tuslah_kry_kel);
+    
+    $f->text("f_pm_kry_kelgratisrj","<B><font color='green'>Persen Margin Karyawan&Keluarga Gratis RJ",4,4,$d->pm_kry_kelgratisrj);
+    $f->text("f_tuslah_kry_kelgratisrj","<B><font color='green'>Tuslah Karyawan&Keluarga Gratis RJ",4,8,$d->tuslah_kry_kelgratisrj);
+    
+    $f->text("f_pm_umum_ri","<B><font color='green'>Persen Margin Pasien Umum Rawat Inap",4,4,$d->pm_umum_ri);
+    $f->text("f_tuslah_umum_ri","<B><font color='green'>Tuslah Pasien Umum Rawat Inap",4,8,$d->tuslah_umum_ri);
+
+    $f->text("f_pm_umum_rj","<B><font color='green'>Persen Margin Pasien Umum Rawat Jalan",4,4,$d->pm_umum_rj);
+    $f->text("f_tuslah_umum_rj","<B><font color='green'>Tuslah Pasien Umum Rawat Jalan",4,8,$d->tuslah_umum_rj);
+
+    $f->text("f_pm_umum_ikutrekening","<B><font color='green'>Persen Margin Pasien Umum Ikut Rek",4,4,$d->pm_umum_ikutrekening);
+    $f->text("f_tuslah_umum_ikutrekening","<B><font color='green'>Tuslah Pasien Umum Ikut Rek",4,8,$d->tuslah_umum_ikutrekening);
+
+    $f->text("f_pm_gratis_rj","<B><font color='green'>Persen Margin Pasien Gratis RJ",4,4,$d->pm_gratis_rj);
+    $f->text("f_tuslah_gratis_rj","<B><font color='green'>Tuslah Pasien Gratis RJ",4,8,$d->tuslah_gratis_rj);
+   
+    $f->text("f_pm_gratis_ri","<B><font color='green'>Persen Margin Pasien Gratis RI",4,4,$d->pm_gratis_ri);
+    $f->text("f_tuslah_gratis_ri","<B><font color='green'>Tuslah Pasien Gratis RI",4,8,$d->tuslah_gratis_ri);
+
+    $f->text("f_pm_pen_bebas","<B><font color='green'>Persen Margin Penjualan Bebas",4,4,$d->pm_pen_bebas);
+    $f->text("f_tuslah_pen_bebas","<B><font color='green'>Tuslah Penjualan Bebas",4,8,$d->tuslah_pen_bebas);
+   
+    $f->text("f_pm_nempil","<B><font color='green'>Persen Margin Nempil",4,4,$d->pm_nempil);
+    $f->text("f_tuslah_nempil","<B><font color='green'>Tuslah Nempil",4,8,$d->tuslah_nempil);
+
+    $f->text("f_pm_nempil_apt","<B><font color='green'>Persen Margin Nempil Apt Kurnia",4,4,$d->pm_nempil_apt);
+    $f->text("f_tuslah_nempil_apt","<B><font color='green'>Tuslah Nempil Apt Kurnia",4,8,$d->tuslah_nempil_apt);
+
+    $f->submit(" Simpan ");
+    $f->execute();
+	
+} else {
+    title("<img src='icon/informasi-2.gif' align='absmiddle' >  Margin Settings");
+    echo "<DIV ALIGN=RIGHT><TABLE BORDER=0><FORM ACTION=$SC NAME=Form2><TR>";
+    echo "<INPUT TYPE=HIDDEN NAME=p VALUE=$PID>";
+    echo "<TD>Pencarian : <INPUT TYPE=TEXT NAME=search VALUE='".$_GET["search"]."'></TD>";
+    echo "<TD><input onchange=\"Form2.submit();\" src=\"icon/ico_find.gif\" title=\"Cari\" type=\"image\"> </TD>";
+
+    echo "</TR></FORM></TABLE></DIV>";
+    $t = new PgTable($con, "100%");
+    $t->SQL = 
+        "select b.tdesc, a.margin_id as dummy ".
+        "from margin_apotik a ".
+        "left join rs00001 b on a.kategori_id = b.tc and tt='GOB'".
+        "where margin_id >='0' and (upper(b.tdesc) LIKE '%".strtoupper($_GET["search"])."%'".
+        "OR upper(a.kategori_id) LIKE '%".strtoupper($_GET["search"])."%')";
+
+    $t->setlocale("id_ID");
+    $t->ShowRowNumber = true;
+    $t->ColAlign[1] = "LEFT";
+    $t->RowsPerPage = $ROWS_PER_PAGE;
+    $t->ColFormatHtml[1] = "<A CLASS=TBL_HREF HREF='$SC?p=$PID&e=<#1#>'>".icon("edit","Edit")."&nbsp;"."</A>";
+    $t->ColHeader = array("Kategori","View");
+    $t->execute();
+    
+    echo "<BR><DIV ALIGN=LEFT><img src=\"icon/user.gif\" align=absmiddle ><A CLASS=SUB_MENU ".
+         "HREF='index2.php?p=$PID&e=new'>Tambah Margin Apotik </A></DIV>";
+}
+}else{
+	
+	$data = getFromTable("select kategori_id from margin_settings where margin_id='".$_GET[e]."'");
+
+    echo "<div align=center>";
+    echo "<form action='actions/848.delete.php' method='get'>";
+    echo "<font color=red size=3>PERINGATAN !</font><br>";
+    echo "<font class=SUB_MENU>Relasi Apotek <font color=navy>'".$data."'</font> akan Dihapus.</font><br><br>";
+    echo "<input type=hidden name=p value=$PID>";
+    echo "<input type=hidden name=e value=".$_GET[e].">";
+    
+    echo "<input type=submit name=sure value='YA'>&nbsp;";
+    echo "<input type=submit name=sure value='TIDAK'>";
+    echo "</form>";
+    echo "</div>";
+}
+
+?>
+

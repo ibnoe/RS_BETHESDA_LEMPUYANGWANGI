@@ -1,0 +1,34 @@
+<?
+require_once("lib/visit_setting.php");
+$sql = 	"select a.*,to_char(a.tanggal_reg,'DD MON YYYY HH24:MI:SS')as tanggal_reg,f.layanan ".
+                "from c_visit_ri a ". 
+                "left join rsv0002 c on a.no_reg=c.id ".
+                "left join rs00006 d on d.id = a.no_reg ".
+                "left join rs00008 e on e.no_reg = a.no_reg ".
+                "left join rs00034 f on 'f.id' = e.item_id ".
+
+                "where a.no_reg='{$_GET['rg']}' and a.id_ri= '{$_GET["polinya"]}' and a.oid= '{$_GET["oid"]}' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>DATA CATATAN PERKEMBANGAN BAYI</div>";
+			echo "</td></tr>";
+    		echo "<tr><td  valign=top>";
+    		$f = new ReadOnlyForm();
+    		$f->text($visit_ri_catatan_perkembangan_bayi["vis_3"],$d[6]);
+    		$f->text($visit_ri_catatan_perkembangan_bayi["vis_1"],$d[4]);
+			$f->text($visit_ri_catatan_perkembangan_bayi["vis_2"],$d[5]);
+			$f->execute();	
+    		echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+?>

@@ -1,0 +1,33 @@
+<graph caption='Grafik Kunjungan Pasien Rawat Jalan' xAxisName='Tanggal' yAxisName='Jumlah' decimalPrecision='0' formatNumberScale='0'>
+<set name='1' value='120' color='AFD8F8' />
+<set name='2' value='220' color='F6BD0F' />
+<set name='3' value='150' color='8BBA00' />
+<set name='4' value='210' color='FF8E46'/>
+<set name='5' value='200' color='008E8E'/>
+<set name='6' value='300' color='D64646'/>
+<set name='7' value='0' color='8E468E'/>
+<set name='8' value='120' color='588526'/>
+<set name='9' value='300' color='B3AA00'/>
+<set name='10' value='180' color='008ED6'/>
+<set name='11' value='160' color='9D080D'/>
+<set name='12' value='200' color='A186BE'/>
+<set name='13' value='100' color='8BBA00' />
+<set name='14' value='0' color='FF8E46'/>
+<set name='15' value='0' color='008E8E'/>
+<set name='16' value='0' color='D64646'/>
+<set name='17' value='0' color='8E468E'/>
+<set name='18' value='0' color='588526'/>
+<set name='19' value='0' color='B3AA00'/>
+<set name='20' value='0' color='008ED6'/>
+<set name='21' value='0' color='9D080D'/>
+<set name='22' value='0' color='A186BE'/>
+<set name='23' value='0' color='8BBA00' />
+<set name='24' value='0' color='FF8E46'/>
+<set name='25' value='0' color='008E8E'/>
+<set name='26' value='0' color='D64646'/>
+<set name='27' value='0' color='8E468E'/>
+<set name='28' value='0' color='588526'/>
+<set name='29' value='0' color='B3AA00'/>
+<set name='30' value='0' color='008ED6'/>
+<set name='31' value='0' color='008ED6'/>
+</graph>

@@ -1,0 +1,322 @@
+<?
+if ($_GET[p]=="335"){
+$cls = "class=TBL_BODY2";
+$ket = "<td $cls align=right>0</td>";
+$ket2 = "<td class=TBL_HEAD2 align=right>&nbsp;</td>";
+}else{
+$cls = "class=TBL_BODY";
+$ket = " ";
+$ket2 = " ";
+}
+
+$nomor = 1;
+
+		if ($admin > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>ADMINISTRASI</td>";
+		echo "<td $cls align=right>" . number_format($admin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($adminPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($admin-$adminPenjamin, '0', '', '.') . "</td>";
+		
+		echo "</tr>";
+		}
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>LAYANAN DOKTER</td>";
+		echo "<td $cls align=right>&nbsp;</td>";
+		echo "<td $cls align=right>&nbsp;</td>";
+		echo "<td $cls align=right>&nbsp;</td>";
+		echo "</tr>";
+		if ($tindakan > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=left>- TINDAKAN MEDIS</td>";
+		echo "<td $cls align=right>" . number_format($tindakan, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($tindakanPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($tindakan-$tindakanPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		$tindakan_query=pg_query("SELECT layanan,b.nama FROM rs00008 a 
+					JOIN rs00017 b ON a.no_kwitansi = b.id 
+					JOIN rs00034 c ON a.item_id::integer = c.id
+					JOIN rs00001 d ON d.tt = 'SBP' AND d.tc = c.sumber_pendapatan_id AND d.tdesc LIKE '%TINDAKAN%'
+					WHERE a.no_reg = '".$_GET['rg']."' AND trans_type = 'LTM'");
+			while($tdk = pg_fetch_array($tindakan_query)){
+				echo "<tr>";
+				echo "<td $cls align=center>&nbsp;</td>";
+				echo "<td $cls align=left>&nbsp;&nbsp;&nbsp;<font><i>".$tdk['layanan']."</i> - (".$tdk['nama'].")</font></td>";
+				echo "<td $cls align=right>&nbsp;</td>";
+				echo "<td $cls align=right>&nbsp;</td>";
+				echo "<td $cls align=right>&nbsp;</td>";
+				echo "</tr>";
+			}
+		}
+		if ($visite > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=left>- VISITE</td>";
+		echo "<td $cls align=right>" . number_format($visite, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($visitePenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($visite-$visitePenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($layananDokter > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=left>- PEMERIKSAAN DOKTER</td>";		
+		echo "<td $cls align=right>" . number_format($layananDokter, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($layananDokterPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($layananDokter-$layananDokterPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		$pemeriksaan_query = pg_query("select d.nama, a.tagihan, b.layanan from rs00008 a left join rs00034 b on b.id=a.item_id::numeric 
+		left join rs00017 d on a.no_kwitansi = d.id left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP' 
+		where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN DOK%'");
+		while($tdk = pg_fetch_array($pemeriksaan_query)){
+				echo "<tr>";
+				echo "<td $cls align=center>&nbsp;</td>";
+				echo "<td $cls align=left>&nbsp;&nbsp;&nbsp;<font size=1><i>".$tdk['layanan']."</i> - (".$tdk['nama'].")</font></td>";
+				echo "<td $cls align=right>&nbsp;</td>";
+				echo "<td $cls align=right>&nbsp;</td>";
+				echo "<td $cls align=right>&nbsp;</td>";
+				echo "</tr>";
+			}
+		
+		}
+		if ($konsul > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=left>- KONSUL</td>";
+		echo "<td $cls align=right>" . number_format($konsul, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($konsulPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($konsul-$konsulPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($alat > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=left>- ALAT</td>";
+		echo "<td $cls align=right>" . number_format($alat, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($$alatPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($alat-$alatPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($bhp > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>BHP DI RUANGAN</td>";
+		echo "<td $cls align=right>" . number_format($bhp, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($bhpPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($bhp-$bhpPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($obat > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>OBAT / FARMASI</td>";
+		echo "<td $cls align=right>" . number_format($obat, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($obatPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($obat-$obatPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($obatReturn > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>RETURN OBAT / FARMASI </td>";
+		echo "<td $cls align=right>-" . number_format($obatReturn, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>-" . number_format($obatPenjaminReturn, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>-" . number_format($obatReturn-$obatPenjaminReturn, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($laborat > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>LABORATORIUM</td>";
+		echo "<td $cls align=right>" . number_format($laborat, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($laboratPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($laborat-$laboratPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($radiologi > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>RADIOLOGI</td>";
+		echo "<td $cls align=right>" . number_format($radiologi, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($radiologiPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($radiologi-$radiologiPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($usg > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>USG / ECG</td>";
+		echo "<td $cls align=right>" . number_format($usg, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($usgPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($usg-$usgPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($oksigen > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>OKSIGEN / NO2</td>";
+		echo "<td $cls align=right>" . number_format($oksigen, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($oksigenPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($oksigen-$oksigenPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($fisio > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>FISIOTERAPHI</td>";
+		echo "<td $cls align=right>" . number_format($fisio, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($fisioPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($fisio-$fisioPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		if ($ambulan > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>AMBULANCE</td>";
+		echo "<td $cls align=right>" . number_format($ambulan, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($ambulanPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($ambulan-$ambulanPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		
+		if ($lain > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>$nomor</td>";
+		$nomor = $nomor + 1;
+		echo "<td $cls align=left>LAIN - LAIN</td>";
+		echo "<td $cls align=right>" . number_format($lain, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($lainPenjamin, '0', '', '.') . "</td>";
+		echo "<td $cls align=right>" . number_format($lain-$lainPenjamin, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+		
+		
+		// if ($_SESSION[uid] == "kasir2" || $_SESSION[uid] == "root") {
+		if ($_GET["kas"] == "ri" || $_GET["kas"] == "root") {
+			echo "<tr>";
+			echo "<td $cls align=center>$nomor</td>";
+			$nomor = $nomor + 1;
+			echo "<td $cls align=left>AKOMODASI RAWAT INAP</td>";
+			echo "<td $cls align=right>" . number_format($akomodasi, '0', '', '.') . "</td>";
+			echo "<td $cls align=right>" . number_format($akomodasiPenjamin, '0', '', '.') . "</td>";
+			echo "<td $cls align=right>" . number_format($akomodasi-$akomodasiPenjamin, '0', '', '.') . "</td>";
+			echo "</tr>";
+		}
+
+		echo "<tr>";
+		echo "<td class=TBL_HEAD2 align=center>&nbsp;</td>";
+		echo "<td class=TBL_HEAD2 align=right>TOTAL :</td>";
+		echo "<td class=TBL_HEAD2 align=right>" . number_format($total-$obatReturn, '0', '', '.') . "</td>";
+		echo "<td class=TBL_HEAD2 align=right>" . number_format($totalPenjamin-$obatPenjaminReturn, '0', '', '.') . "</td>";
+		echo "<td class=TBL_HEAD2 align=right>" . number_format(($total-$obatReturn)-($totalPenjamin-$obatPenjaminReturn), '0', '', '.') . "</td>";
+		echo "</tr>";
+
+		$Askes = getFromTable("select sum(jumlah) from rs00005 where reg='$reg' and kasir='ASK'");
+		if ($Askes > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=right>DIBAYARKAN PENJAMIN :</td>";
+		echo "<td $cls align=right>" . number_format($Askes, '0', '', '.') . "</td>";
+		echo "$ket";
+		echo "</tr>";
+		}
+
+//		if ($cekPotong > 0){
+//		echo "<tr>";
+//		echo "<td $cls align=center>&nbsp;</td>";
+//		echo "<td $cls align=right>POTONGAN :</td>";
+//		echo "<td $cls align=right>" . number_format($cekPotong, '0', '', '.') . "</td>";
+//		echo "$ket";
+//		echo "</tr>";
+//		}
+
+		if ($potongan > 0){
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=right>POTONGAN :</td>";
+		echo "<td $cls align=right>" . number_format($potongan, '0', '', '.') . "</td>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "</tr>";
+		}
+
+//		$tagihan = $total - ($Askes + $cekBayar + $cekPotong + $obatPenjamin+$visitePenjamin+$laboratPenjamin) ;
+		$tagihan = ($total-$totalPenjamin-$obatReturn-$cekPotong)-$cekBayar;
+
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=right>PEMBAYARAN :</td>";
+		echo "<td $cls align=right>" . number_format($cekBayar, '0', '', '.') . "</td>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "</tr>";
+		
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=right>PEMBULATAN :</td>";
+		echo "<td $cls align=right>" . number_format($PembulatanCekBayar11, '0', '', '.') . "</td>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "</tr>";
+		
+		echo "<tr>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=right>JUMLAH YANG TELAH DIBAYAR :</td>";
+		echo "<td $cls align=right>" . number_format($totalpembulatanCekBayar11, '0', '', '.') . "</td>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "<td $cls align=center>&nbsp;</td>";
+		echo "</tr>";
+
+		if ($tagihan > 0){
+		echo "<tr>";
+		echo "<td class=TBL_HEAD2 align=center>&nbsp;</td>";
+		echo "<td class=TBL_HEAD2 align=right>SISA PEMBAYARAN :</td>";
+		echo "<td class=TBL_HEAD2 align=right>&nbsp;</td>";
+		echo "<td class=TBL_HEAD2 align=right>&nbsp;</td>";
+                echo "<td class=TBL_HEAD2 align=right>" . number_format($tagihan, '0', '', '.') . "</td>";
+		echo "</tr>";
+		
+		echo "<tr>";
+		echo "<td class=TBL_HEAD2 align=center>&nbsp;</td>";
+		echo "<td class=TBL_HEAD2 align=right>PEMBULATAN :</td>";
+		echo "<td class=TBL_HEAD2 align=right>&nbsp;</td>";
+		echo "<td class=TBL_HEAD2 align=right>&nbsp;</td>";
+                echo "<td class=TBL_HEAD2 align=right>" . number_format($pembulatan, '0', '', '.') . "</td>";
+		echo "</tr>";
+		
+		echo "<tr>";
+		echo "<td class=TBL_HEAD2 align=center>&nbsp;</td>";
+		echo "<td class=TBL_HEAD2 align=right>JUMLAH YANG HARUS DIBAYAR :</td>";
+		echo "<td class=TBL_HEAD2 align=right>&nbsp;</td>";
+		echo "<td class=TBL_HEAD2 align=right>&nbsp;</td>";
+                echo "<td class=TBL_HEAD2 align=right>" . number_format($total_pembulatan, '0', '', '.') . "</td>";
+		echo "</tr>";
+		}
+
+
+		if($potongan >0){
+		?>
+		<tr>
+		<td $cls align='center'>&nbsp;</td>
+		<td $cls align=right>KETERANGAN POTONGAN :</td>
+		<td $cls align='left'><?=strtoupper(getFromTable("SELECT keterangan FROM rs00005 WHERE reg = '".$_GET['rg']."' AND kasir='POT'"))?></td>
+		</tr>
+		<?php
+		}
+		echo "</table><br>";
+
+?>

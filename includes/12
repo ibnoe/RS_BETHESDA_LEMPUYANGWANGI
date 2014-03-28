@@ -1,0 +1,207 @@
+<?php
+//  apep-- juli 28, 2007 
+
+$PID = "p_kebidanan";
+$SC = $_SERVER["SCRIPT_NAME"];
+session_start();
+
+if (!empty($_SESSION[uid])) {
+
+require_once("startup.php");
+require_once("lib/visit_setting.php");
+
+$_GET["mPOLI_obs"]=$setting_poli["kebidanan_obstetri"];
+$_GET["mPOLI_gin"]=$setting_poli["kebidanan_ginekologi"];
+
+
+
+$tab_disabled = array("obstetri"=>true, "ginekologi"=>true);
+if ($_GET["act"] == "detail" ) {
+	$tab_disabled = array("obstetri"=>false, "ginekologi"=>false);
+	$tab_disabled = array("obstetri"=>true, "ginekologi"=>true);
+	
+	$tab_disabled[$_GET["tab"]] = true;
+	$tab_disabled[$_POST["tab"]] = true;
+}
+$T = new TabBar();
+
+if(!$GLOBALS['print']){
+	$T->addTab("index2.php?p=p_kebidanan&tab=obstetri", " OBSTETRI "	, $tab_disabled["obstetri"]);
+	$T->addTab("index2.php?p=p_kebidanan&tab=ginekologi", " GINEKOLOGI ", $tab_disabled["ginekologi"]);
+}else {
+	$T->addTab("", " OBSTETRI "	, $tab_disabled["obstetri"]);
+	$T->addTab("", " GINEKOLOGI ", $tab_disabled["ginekologi"]);
+}
+	//--fungsi column color-------------- 
+		function color( $dstr, $r ) {
+	    //if ($dstr[7] == '-') {
+	    	if ($dstr[8] == 'BELUM BAYAR' ){
+	    		return "<font color=red>{$dstr[$r]}</font>";
+	    	}else{
+	    		return "<font color=blue>{$dstr[$r]}</font>";
+	    	}/*elseif ($dstr[9] == 'Bayar Angsur'){
+	    		return "<font color=#FF9900>{$dstr[$r]}</font>";
+	    	}elseif ($dstr[9] == 'Bayar Lunas'){
+	    		return "<font color=#FF3300>{$dstr[$r]}</font>";
+	    	}*/
+	    	//return "<font color=#0000FF>{$dstr[$r]}</font>";
+	    //}else return $dstr[$i];
+}
+		//-------------------------------   
+if ($_GET["tab"] == "ginekologi") {
+	if(!$GLOBALS['print']){
+		title_print("<img src='icon/rawat-jalan-2.gif' align='absmiddle'> KLINIK KEBIDANAN DAN PENYAKIT KANDUNGAN (GINEKOLOGI)");
+		title_excel("p_ginekologi&tblstart=".$_GET['tblstart']);
+		$T->show(1);
+	}	
+	
+    	
+    	//if ($_GET['act'] ==  "detail") {
+		$ext = "OnChange = 'Form1.submit();'";
+		    $f = new Form($SC, "GET", "NAME=Form1");
+		    $f->PgConn = $con;
+		    $f->hidden("p", $PID);
+		    $f->hidden("tab", "ginekologi");
+		    $f->hidden("list", "pemeriksaan");
+		    $f->hidden("poli",$_GET["mPOLI_gin"]);
+		    
+		   		
+		   		echo "<div align='right' valign='middle'>";	
+				$f = new Form($SC, "GET","NAME=Form2");
+			    $f->hidden("p", $PID);
+			    $f->hidden("tab", "ginekologi");
+			    if (!$GLOBALS['print']) {
+			    	$f->search("search","Pencarian",20,20,$_GET["search"],"icon/ico_find.gif","Cari","OnChange='Form2.submit();'");
+				}
+			    $f->execute();
+		    	if ($msg) errmsg("Error:", $msg);
+		    	echo "</div>";
+				//---------------------
+				echo "<br>";
+			
+			$SQLSTR = 	"SELECT a.mr_no, a.id,a.nama, ".
+				"	a.alm_tetap,a.kesatuan,a.tipe_desc,case when a.tipe_desc = 'KONTRAKTOR' then 'RESTITUSI' when b.statusbayar = 'BELUM LUNAS'  then 'BELUM BAYAR' ".
+				"when b.statusbayar = 'LUNAS' then 'BAYAR'  end as status  ".
+				"FROM rsv_pasien3 a,rsv0012 b  ".
+				"WHERE a.poli='".$_GET["mPOLI_gin"]."' AND a.is_out = 'N' AND a.id = b.id";
+		// 24-12-2006 --> tambahan 'where is_bayar = 'N'
+		//status_akhir,rawatan di query sementara di tutup
+          //29-04-211 -->   status pasien ditampilkan perhari 'AND a.TANGGAL_REG = '$tglhariini' '        
+
+		$tglhariini = date("Y-m-d", time());
+    if (strlen($_GET["mPOLI_gin"]) > 0 ) {
+		$SQLWHERE =
+			"AND a.TANGGAL_REG = '$tglhariini' AND".
+			"	(UPPER(a.NAMA) LIKE '%".strtoupper($_GET["search"])."%') ";
+	}
+	if ($_GET["search"]) {
+		$SQLWHERE =
+			"and (upper(a.nama) LIKE '%".strtoupper($_GET["search"])."%' or a.id like '%".$_GET['search']."%' or a.mr_no like '%".$_GET["search"]."%' ".
+					" or upper(a.pangkat_gol) like '%".strtoupper($_GET["search"])."%' or a.nrp_nip like '%".$_GET['search']."%' ".
+					" or upper(a.kesatuan) like '%".strtoupper($_GET["search"])."%' ) ";
+	}
+	if (!isset($_GET[sort])) {
+
+           $_GET[sort] = "a.id";
+           $_GET[order] = "desc";
+	}
+	
+	$rstr=pg_query($con, "$SQLSTR $SQLWHERE ");
+   // $n = pg_num_rows($rstr);		    	
+	$dstr = pg_fetch_array($rstr); 
+	   	$t = new PgTable($con, "100%");
+	   	$t->SQL = "$SQLSTR $SQLWHERE ";
+	    $t->setlocale("id_ID");
+	    $t->ShowRowNumber = true;
+	    $t->ColAlign = array("CENTER","CENTER","LEFT","LEFT","LEFT","CENTER","LEFT","LEFT","LEFT","LEFT","LEFT");	
+	    $t->RowsPerPage = $ROWS_PER_PAGE;
+	    $t->ColFormatHtml[2] = "<A CLASS=SUB_MENU1 HREF='$SC?p=p_ginekologi&tab=ginekologi&act=detail&rg=<#1#>&mr=<#0#>&poli={$_GET["mPOLI_gin"]}'><#2#>";
+	    //(awal)$t->ColFormatHtml[8] = "<A HREF='$SC?p=$PID&rg=<#1#>&mr=<#0#>&poli={$_GET["mPOLI"]}&act=periksa'><INPUT NAME='submitButton' TYPE=SUBMIT VALUE='Periksa' >";
+	   	//$t->ColHeader = array("NO.MR", "NO<br>REGISTRASI","TANGGAL  REG","WAKTU REG","NAMA PASIEN","PANGKAT","NRP/NIP","KESATUAN","LOKET","TIPE PASIEN","STATUS");
+	   	$t->ColHeader = array("NO.MR", "NO<br>REGISTRASI","NAMA PASIEN","ALAMAT","PEKERJAAN","TIPE PASIEN","STATUS");
+	    $t->ColColor[8] = "color";
+	    //$t->ColRowSpan[2] = 2;
+	    $t->execute();
+			    echo"<br><div class=NOTE><b>Catatan : Daftar pasien diurut berdasarkan no antrian<B></div><br>";		
+				
+    	//}
+}else {
+    if(!$GLOBALS['print']){
+		
+    	title_print("<img src='icon/rawat-jalan-2.gif' align='absmiddle'> <b>KLINIK KEBIDANAN (OBSTETRI)</B>");
+    	title_excel("p_obstetri&tblstart=".$_GET['tblstart']);
+		$T->show(0);
+    }
+		//if ($_GET['act'] ==  "detail"){
+		
+		$ext = "OnChange = 'Form1.submit();'";
+		    $f = new Form($SC, "GET", "NAME=Form1");
+		    $f->PgConn = $con;
+		    $f->hidden("p", $PID);
+		    $f->hidden("tab", "obsteteri");
+		    $f->hidden("list", "pemeriksaan");
+		    $f->hidden("poli",$_GET["mPOLI_obs"]);
+		    
+		   		
+		   		echo "<div align='right' valign='middle'>";	
+				$f = new Form($SC, "GET","NAME=Form2");
+			    $f->hidden("p", $PID);
+			    $f->hidden("tab", "obsteteri");
+			    if (!$GLOBALS['print']) {
+			    	$f->search("search","Pencarian",20,20,$_GET["search"],"icon/ico_find.gif","Cari","OnChange='Form2.submit();'");
+				}
+			    $f->execute();
+		    	if ($msg) errmsg("Error:", $msg);
+		    	echo "</div>";
+				//---------------------
+				echo "<br>";
+			
+			$SQLSTR = 	"SELECT a.mr_no, a.id,a.nama, ".
+				"	a.alm_tetap,a.kesatuan,a.tipe_desc,case when a.tipe_desc like 'DINAS%' then 'BAYAR' when a.tipe_desc = 'KONTRAKTOR' then 'RESTITUSI' when b.statusbayar = 'BELUM LUNAS'  then 'BELUM BAYAR' ".
+				"when b.statusbayar = 'LUNAS' then 'BAYAR'  end as status  ".
+				"FROM rsv_pasien3 a,rsv0012 b  ".
+				"WHERE a.poli='".$_GET["mPOLI_obs"]."' AND a.is_out = 'N' AND a.id = b.id";
+		// 24-12-2006 --> tambahan 'where is_bayar = 'N'
+		//status_akhir,rawatan di query sementara di tutup
+        
+		$tglhariini = date("Y-m-d", time());
+    if (strlen($_GET["mPOLI_obs"]) > 0 ) {
+		$SQLWHERE =
+			"AND a.TANGGAL_REG = '$tglhariini' AND".
+			"	(UPPER(a.NAMA) LIKE '%".strtoupper($_GET["search"])."%') ";
+	}
+	if ($_GET["search"]) {
+		$SQLWHERE =
+			"and (upper(a.nama) LIKE '%".strtoupper($_GET["search"])."%' or a.id like '%".$_GET['search']."%' or a.mr_no like '%".$_GET["search"]."%' ".
+					" or upper(a.pangkat_gol) like '%".strtoupper($_GET["search"])."%' or a.nrp_nip like '%".$_GET['search']."%' ".
+					" or upper(a.kesatuan) like '%".strtoupper($_GET["search"])."%' ) ";
+	}
+	if (!isset($_GET[sort])) {
+
+           $_GET[sort] = "a.id";
+           $_GET[order] = "asc";
+	}
+	
+	$rstr=pg_query($con, "$SQLSTR $SQLWHERE ");
+   // $n = pg_num_rows($rstr);		    	
+	$dstr = pg_fetch_array($rstr); 
+	   	$t = new PgTable($con, "100%");
+	   	$t->SQL = "$SQLSTR $SQLWHERE ";
+	    $t->setlocale("id_ID");
+	    $t->ShowRowNumber = true;
+	    $t->ColAlign = array("CENTER","CENTER","LEFT","LEFT","LEFT","CENTER","LEFT","LEFT","LEFT","LEFT","LEFT");	
+	    $t->RowsPerPage = $ROWS_PER_PAGE;
+	    $t->ColFormatHtml[2] = "<A CLASS=SUB_MENU1 HREF='$SC?p=p_obsteteri&tab=obsteteri&act=detail&rg=<#1#>&mr=<#0#>&poli={$_GET["mPOLI_obs"]}'><#2#>";
+	    //(awal)$t->ColFormatHtml[8] = "<A HREF='$SC?p=$PID&rg=<#1#>&mr=<#0#>&poli={$_GET["mPOLI"]}&act=periksa'><INPUT NAME='submitButton' TYPE=SUBMIT VALUE='Periksa' >";
+	   	//$t->ColHeader = array("NO.MR", "NO<br>REGISTRASI","TANGGAL  REG","WAKTU REG","NAMA PASIEN","PANGKAT","NRP/NIP","KESATUAN","LOKET","TIPE PASIEN","STATUS");
+	   	$t->ColHeader = array("NO.MR", "NO<br>REGISTRASI","NAMA PASIEN","ALAMAT","PEKERJAAN","TIPE PASIEN","STATUS");
+	    $t->ColColor[8] = "color";
+	    //$t->ColRowSpan[2] = 2;
+	    $t->execute();
+			    echo"<br><div class=NOTE><B>Catatan : Daftar pasien diurut berdasarkan no antrian</B></div><br>";
+	
+		//}
+		
+}
+}
+?>

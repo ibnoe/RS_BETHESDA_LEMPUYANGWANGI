@@ -1,0 +1,22 @@
+<graph caption='Data Antrian Pelayanan' xAxisName='Pelayanan' yAxisName='Jumlah' decimalPrecision='0' formatNumberScale='0'>
+<set name='Poli Jantung' value='5' color='AFD8F8' />
+<set name='Poli Interne' value='6' color='F6BD0F' />
+<set name='Poli Bedah' value='4' color='8BBA00' />
+<set name='Poli Anak' value='2' color='FF8E46'/>
+<set name='Poli Kulit & Kelamin' value='3' color='008E8E'/>
+<set name='Poli Gigi & Mulut' value='2' color='D64646'/>
+<set name='Poli Akupuntur' value='0' color='8E468E'/>
+<set name='Poli Umum' value='1' color='588526'/>
+<set name='Poli THT' value='4' color='B3AA00'/>
+<set name='Poli Mata' value='5' color='008ED6'/>
+<set name='Poli Paru/Alergi' value='7' color='9D080D'/>
+<set name='Poli Kebidanan' value='8' color='A186BE'/>
+<set name='Poli Jiwa' value='5' color='8BBA00' />
+<set name='Poli Saraf' value='6' color='FF8E46'/>
+<set name='Fisioterapi' value='7' color='008E8E'/>
+<set name='Laboratorium' value='8' color='D64646'/>
+<set name='Radiologi' value='0' color='8E468E'/>
+<set name='Operasi' value='8' color='588526'/>
+<set name='IGD' value='9' color='B3AA00'/>
+<set name='Apotik' value='5' color='008ED6'/>
+</graph>

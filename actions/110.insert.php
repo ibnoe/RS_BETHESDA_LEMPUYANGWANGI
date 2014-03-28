@@ -1,0 +1,100 @@
+<?php // Nugraha, 14/02/2004
+
+/******************
+   REGISTRASI MR
+******************/
+
+$PID = "120";
+$SC = $_SERVER["SCRIPT_NAME"];
+
+
+require_once("../lib/dbconn.php");
+require_once("../lib/querybuilder.php");
+
+if ($_POST[f_nama] == "") {
+	$pesan = " * harus diisi";
+	$ibu = $_POST['f_nama_ibu'];
+	if ($_POST['f_is_bayi'] == "Y"){
+    	header("Location: ../index2.php?p=120&registered=B&ibu=$ibu&psn=$pesan");	
+    }else {
+   		header("Location: ../index2.php?p=120&registered=N&psn=$pesan");
+    }
+   exit();
+}
+
+$nama=$_POST["f_nama"];
+$lahirD=$_POST["f_tgl_lahirD"];
+$lahirM=$_POST["f_tgl_lahirM"];
+$lahirY=$_POST["f_tgl_lahirY"];
+$alamat=$_POST["f_alm_tetap"];
+$kota=$_POST["f_kota_tetap"];
+//echo $lahirD ." ".  $lahirM ." ". $lahirY ." ".$nama;
+$lahir=$lahirY ."-".  $lahirM ."-". $lahirD;
+$SQLCEK="select * from rs00002 where UPPER(nama)=UPPER('$nama') and tgl_lahir='$lahir'";
+$pesan = "Pasien Sudah Terdaftar";
+$r3 = pg_query($con,$SQLCEK);
+$n3 = pg_num_rows($r3);
+if ($n3 > 0) 
+{ echo "<script type='text/javascript'>
+var stay=alert('Pasien sudah terdaftar')
+if (!stay)
+window.location='../index2.php?p=120&registered=N&psn=$pesan';
+</script>
+";
+//header("Location: ../index2.php?p=120&registered=N&psn=$pesan");
+exit();
+} else{
+if ($_POST[f_nama] == "") {
+	$pesan = " * harus diisi";
+	$ibu = $_POST['f_nama_ibu'];
+	if ($_POST['f_is_bayi'] == "Y"){
+    	header("Location: ../index2.php?p=120&registered=B&ibu=$ibu&psn=$pesan");	
+    }else {
+   		header("Location: ../index2.php?p=120&registered=N&psn=$pesan");
+    }
+   exit();
+}
+
+$thnini = date("Y", time());
+if ($_POST['f_umur'] == "") {
+
+   $_POST['f_umur'] = $thnini - $_POST['f_tgl_lahirY'];   
+   $_POST['f_tgl_lahirD'] = 1;
+   $_POST['f_tgl_lahirM'] = 1;
+} else {
+   $_POST['f_tgl_lahirY'] = $thnini - $_POST['f_umur'];
+
+}
+$cetak_kartu = $_POST[cek_printer] ;
+            
+$qb = New InsertQuery();
+$qb->TableName = "rs00002";
+$qb->HttpAction = "POST";
+$qb->VarPrefix = "f_";
+$qb->VarTypeIsDate = Array("tgl_lahir");
+$qb->addFieldValue("mr_no", "nextval('rs00002_seq')");
+
+$SQL = $qb->build();
+
+pg_query($con, $SQL);
+
+$ro = pg_query($con, "select currval('rs00002_seq') as mr_no");
+$do = pg_fetch_object($ro);
+pg_free_result($ro);
+$mrno = str_pad(((int) $do->mr_no), 6, "0", STR_PAD_LEFT);
+pg_query("update rs00002 set mr_no='".$mrno."' ".
+	 	 "where mr_no='".$do->mr_no."'") or die("error atuh");
+
+if ($_POST["p"] == "120") {
+    if ($_POST['f_is_bayi'] == "Y"){
+    	header("Location: ../index2.php?p=120&q=reg&mr_no=$mrno&cetak=$cetak_kartu&is_baru=Y&is_bayi='Y'");	
+    }else {
+    	header("Location: ../index2.php?p=120&q=reg&mr_no=$mrno&cetak=$cetak_kartu&is_baru=Y");
+    }
+    
+} else {
+    header("Location: ../index2.php?p=$PID");
+}
+exit;}
+
+?>

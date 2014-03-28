@@ -1,0 +1,2261 @@
+<?php
+
+//if($_GET[p]=="CoaAk") {
+ 
+//------------------------------------------------------------------------------------------------------
+/* COA Akuntansi Coy !!! */
+//-- rawat_inap = N (IGD)
+//-- rawat_inap = Y (Rawat Jalan)
+//-- rawat_inap = I (Rawat Inap)
+
+//-- is_bayar = Y (Lunas)
+//-- is_bayar = N (Belum Lunas)
+
+//------------------------------------------------------------------------------------------------------
+
+/* Start VISITE ---------------------------------------------------------------------------------- */
+//-- 1. visite IGD dan Lunas 
+$visiteIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and trans_form='p_igd'and is_bayar='Y'  
+											and a.no_reg='$_GET[rg]'and a.no_reg='$_GET[rg]'  and a.no_reg='$_GET[rg]' ");
+
+//-- 2. visite IGD dan Lunas (Penjamin)
+$visitePenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. visite Rajal dan Lunas
+$visiteRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. visite Rajal dan Lunas (Penjamin)
+$visitePenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. visite Ranap dan Lunas 
+$visiteRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. visite Ranap dan Lunas (Penjamin)
+$visitePenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. visite IGD dan No Lunas 
+$visiteIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. visite IGD dan No Lunas (Penjamin)
+$visitePenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. visite Rajal dan No Lunas 
+$visiteRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. visite Rajal dan No Lunas (Penjamin)
+$visitePenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. visite Ranap dan No Lunas 
+$visiteRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. visite Ranap dan No Lunas (Penjamin)
+$visitePenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%VISITE%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End VISITE ---------------------------------------------------------------------------------- */											
+									
+
+/* Start ALAT ---------------------------------------------------------------------------------- */
+//-- 1. alat IGD dan Lunas 
+$alatIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. alat IGD dan Lunas (Penjamin)
+$alatPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. alat Rajal dan Lunas
+$alatRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. alat Rajal dan Lunas (Penjamin)
+$alatPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. alat Ranap dan Lunas 
+$alatRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. alat Ranap dan Lunas (Penjamin)
+$alatPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. alat IGD dan No Lunas 
+$alatIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. alat IGD dan No Lunas (Penjamin)
+$alatPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. alat Rajal dan No Lunas 
+$alatRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. alat Rajal dan No Lunas (Penjamin)
+$alatPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. alat Ranap dan No Lunas 
+$alatRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. alat Ranap dan No Lunas (Penjamin)
+$alatPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ALAT%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End ALAT ---------------------------------------------------------------------------------- */
+
+
+/* Start RADIOLOGI ---------------------------------------------------------------------------------- */
+//-- 1. radiologi IGD dan Lunas 
+$radiologiIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. radiologi IGD dan Lunas (Penjamin)
+$radiologiPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. radiologi Rajal dan Lunas
+$radiologiRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. radiologi Rajal dan Lunas (Penjamin)
+$radiologiPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. radiologi Ranap dan Lunas 
+$radiologiRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. radiologi Ranap dan Lunas (Penjamin)
+$radiologiPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. radiologi IGD dan No Lunas 
+$radiologiIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. radiologi IGD dan No Lunas (Penjamin)
+$radiologiPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. radiologi Rajal dan No Lunas 
+$radiologiRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. radiologi Rajal dan No Lunas (Penjamin)
+$radiologiPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. radiologi Ranap dan No Lunas 
+$radiologiRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. radiologi Ranap dan No Lunas (Penjamin)
+$radiologiPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RADIOLOGI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End RADIOLOGI ---------------------------------------------------------------------------------- */
+
+
+
+/* Start TINDAKAN ---------------------------------------------------------------------------------- */
+//-- 1. tindakan IGD dan Lunas 
+$tindakanIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. tindakan IGD dan Lunas (Penjamin)
+$tindakanPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. tindakan Rajal dan Lunas
+$tindakanRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and rawat_inap='Y' and is_bayar='Y'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. tindakan Rajal dan Lunas (Penjamin)
+$tindakanPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and rawat_inap='Y' and is_bayar='Y'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. tindakan Ranap dan Lunas 
+$tindakanRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. tindakan Ranap dan Lunas (Penjamin)
+$tindakanPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. tindakan IGD dan No Lunas 
+$tindakanIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and trans_form='p_igd' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. tindakan IGD dan No Lunas (Penjamin)
+$tindakanPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and trans_form='p_igd' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. tindakan Rajal dan No Lunas 
+$tindakanRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and rawat_inap='Y' and is_bayar='N'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. tindakan Rajal dan No Lunas (Penjamin)
+$tindakanPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and rawat_inap='Y' and is_bayar='N'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. tindakan Ranap dan No Lunas 
+$tindakanRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. tindakan Ranap dan No Lunas (Penjamin)
+$tindakanPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TINDAKAN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End TINDAKAN ---------------------------------------------------------------------------------- */
+
+
+/* Start KONSULTASI ---------------------------------------------------------------------------------- */
+//-- 1. konsultasi IGD dan Lunas 
+$konsultasiIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. konsultasi IGD dan Lunas (Penjamin)
+$konsultasiPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. konsultasi Rajal dan Lunas
+$konsultasiRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and rawat_inap='Y' and is_bayar='Y'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. konsultasi Rajal dan Lunas (Penjamin)
+$konsultasiPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and rawat_inap='Y' and is_bayar='Y'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. konsultasi Ranap dan Lunas 
+$konsultasiRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. konsultasi Ranap dan Lunas (Penjamin)
+$konsultasiPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. konsultasi IGD dan No Lunas 
+$konsultasiIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. konsultasi IGD dan No Lunas (Penjamin)
+$konsultasiPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. konsultasi Rajal dan No Lunas 
+$konsultasiRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and rawat_inap='Y' and is_bayar='N'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. konsultasi Rajal dan No Lunas (Penjamin)
+$konsultasiPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and rawat_inap='Y' and is_bayar='N'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. konsultasi Ranap dan No Lunas 
+$konsultasiRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. konsultasi Ranap dan No Lunas (Penjamin)
+$konsultasiPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%KONSULTASI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End KONSULTASI ---------------------------------------------------------------------------------- */
+
+
+/* Start LABORATORIUM ---------------------------------------------------------------------------------- */
+//-- 1. laboratorium IGD dan Lunas 
+$laboratoriumIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. laboratorium IGD dan Lunas (Penjamin)
+$laboratoriumPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. laboratorium Rajal dan Lunas
+$laboratoriumRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. laboratorium Rajal dan Lunas (Penjamin)
+$laboratoriumPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. laboratorium Ranap dan Lunas 
+$laboratoriumRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. laboratorium Ranap dan Lunas (Penjamin)
+$laboratoriumPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. laboratorium IGD dan No Lunas 
+$laboratoriumIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. laboratorium IGD dan No Lunas (Penjamin)
+$laboratoriumPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. laboratorium Rajal dan No Lunas 
+$laboratoriumRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. laboratorium Rajal dan No Lunas (Penjamin)
+$laboratoriumPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. laboratorium Ranap dan No Lunas 
+$laboratoriumRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. laboratorium Ranap dan No Lunas (Penjamin)
+$laboratoriumPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LABORATORIUM%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End LABORATORIUM ---------------------------------------------------------------------------------- */
+
+
+/* Start AMBULANCE ---------------------------------------------------------------------------------- */
+//-- 1. ambulance IGD dan Lunas 
+$ambulanceIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. ambulance IGD dan Lunas (Penjamin)
+$ambulancePenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. ambulance Rajal dan Lunas
+$ambulanceRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. ambulance Rajal dan Lunas (Penjamin)
+$ambulancePenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. ambulance Ranap dan Lunas 
+$ambulanceRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. ambulance Ranap dan Lunas (Penjamin)
+$ambulancePenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. ambulance IGD dan No Lunas 
+$ambulanceIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. ambulance IGD dan No Lunas (Penjamin)
+$ambulancePenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. ambulance Rajal dan No Lunas 
+$ambulanceRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. ambulance Rajal dan No Lunas (Penjamin)
+$ambulancePenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. ambulance Ranap dan No Lunas 
+$ambulanceRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. ambulance Ranap dan No Lunas (Penjamin)
+$ambulancePenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AMBULANCE%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End AMBULANCE ---------------------------------------------------------------------------------- */
+
+/* Start ESG ---------------------------------------------------------------------------------- */
+//-- 1. esg IGD dan Lunas 
+$esgIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. esg IGD dan Lunas (Penjamin)
+$esgPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. esg Rajal dan Lunas
+$esgRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. esg Rajal dan Lunas (Penjamin)
+$esgPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. esg Ranap dan Lunas 
+$esgRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. esg Ranap dan Lunas (Penjamin)
+$esgPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. esg IGD dan No Lunas 
+$esgIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. esg IGD dan No Lunas (Penjamin)
+$esgPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. esg Rajal dan No Lunas 
+$esgRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. esg Rajal dan No Lunas (Penjamin)
+$esgPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. esg Ranap dan No Lunas 
+$esgRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. esg Ranap dan No Lunas (Penjamin)
+$esgPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ESG%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End ESG ---------------------------------------------------------------------------------- */
+
+
+/* Start OKSIGEN ---------------------------------------------------------------------------------- */
+//-- 1. oksigen IGD dan Lunas 
+$oksigenIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. oksigen IGD dan Lunas (Penjamin)
+$oksigenPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. oksigen Rajal dan Lunas
+$oksigenRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. oksigen Rajal dan Lunas (Penjamin)
+$oksigenPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. oksigen Ranap dan Lunas 
+$oksigenRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. oksigen Ranap dan Lunas (Penjamin)
+$oksigenPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. oksigen IGD dan No Lunas 
+$oksigenIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. oksigen IGD dan No Lunas (Penjamin)
+$oksigenPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. oksigen Rajal dan No Lunas 
+$oksigenRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. oksigen Rajal dan No Lunas (Penjamin)
+$oksigenPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. oksigen Ranap dan No Lunas 
+$oksigenRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. oksigen Ranap dan No Lunas (Penjamin)
+$oksigenPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%OKSIGEN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End OKSIGEN ---------------------------------------------------------------------------------- */
+
+
+
+/* Start FISIOTERAPHI ---------------------------------------------------------------------------------- */
+//-- 1. fisioteraphi IGD dan Lunas 
+$fisioteraphiIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. fisioteraphi IGD dan Lunas (Penjamin)
+$fisioteraphiPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. fisioteraphi Rajal dan Lunas
+$fisioteraphiRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. fisioteraphi Rajal dan Lunas (Penjamin)
+$fisioteraphiPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. fisioteraphi Ranap dan Lunas 
+$fisioteraphiRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. fisioteraphi Ranap dan Lunas (Penjamin)
+$fisioteraphiPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. fisioteraphi IGD dan No Lunas 
+$fisioteraphiIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. fisioteraphi IGD dan No Lunas (Penjamin)
+$fisioteraphiPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. fisioteraphi Rajal dan No Lunas 
+$fisioteraphiRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. fisioteraphi Rajal dan No Lunas (Penjamin)
+$fisioteraphiPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. fisioteraphi Ranap dan No Lunas 
+$fisioteraphiRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. fisioteraphi Ranap dan No Lunas (Penjamin)
+$fisioteraphiPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%FISIOTERAPHI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End FISIOTERAPHI ---------------------------------------------------------------------------------- */
+
+
+
+/* Start ADMINISTRASI ---------------------------------------------------------------------------------- */
+//-- 1. administrasi IGD dan Lunas 
+$administrasiIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. administrasi IGD dan Lunas (Penjamin)
+$administrasiPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. administrasi Rajal dan Lunas
+$administrasiRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. administrasi Rajal dan Lunas (Penjamin)
+$administrasiPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. administrasi Ranap dan Lunas 
+$administrasiRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. administrasi Ranap dan Lunas (Penjamin)
+$administrasiPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. administrasi IGD dan No Lunas 
+$administrasiIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. administrasi IGD dan No Lunas (Penjamin)
+$administrasiPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. administrasi Rajal dan No Lunas 
+$administrasiRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. administrasi Rajal dan No Lunas (Penjamin)
+$administrasiPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. administrasi Ranap dan No Lunas 
+$administrasiRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. administrasi Ranap dan No Lunas (Penjamin)
+$administrasiPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%ADMINISTRASI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End ADMINISTRASI ---------------------------------------------------------------------------------- */
+
+
+/* Start LAIN ---------------------------------------------------------------------------------- */
+//-- 1. lain IGD dan Lunas 
+$lainIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. lain IGD dan Lunas (Penjamin)
+$lainPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. lain Rajal dan Lunas
+$lainRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. lain Rajal dan Lunas (Penjamin)
+$lainPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. lain Ranap dan Lunas 
+$lainRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. lain Ranap dan Lunas (Penjamin)
+$lainPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. lain IGD dan No Lunas 
+$lainIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. lain IGD dan No Lunas (Penjamin)
+$lainPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. lain Rajal dan No Lunas 
+$lainRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. lain Rajal dan No Lunas (Penjamin)
+$lainPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. lain Ranap dan No Lunas 
+$lainRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. lain Ranap dan No Lunas (Penjamin)
+$lainPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%LAIN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End LAIN ---------------------------------------------------------------------------------- */
+
+
+/* Start PEMERIKSAAN ---------------------------------------------------------------------------------- */
+//-- 1. pemeriksaan IGD dan Lunas 
+$pemeriksaanIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. pemeriksaan IGD dan Lunas (Penjamin)
+$pemeriksaanPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. pemeriksaan Rajal dan Lunas
+$pemeriksaanRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and rawat_inap='Y' and is_bayar='Y'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. pemeriksaan Rajal dan Lunas (Penjamin)
+$pemeriksaanPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and rawat_inap='Y' and is_bayar='Y'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. pemeriksaan Ranap dan Lunas 
+$pemeriksaanRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. pemeriksaan Ranap dan Lunas (Penjamin)
+$pemeriksaanPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. pemeriksaan IGD dan No Lunas 
+$pemeriksaanIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. pemeriksaan IGD dan No Lunas (Penjamin)
+$pemeriksaanPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. pemeriksaan Rajal dan No Lunas 
+$pemeriksaanRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and rawat_inap='Y' and is_bayar='N'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. pemeriksaan Rajal dan No Lunas (Penjamin)
+$pemeriksaanPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and rawat_inap='Y' and is_bayar='N'  and trans_form!='p_igd'
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. pemeriksaan Ranap dan No Lunas 
+$pemeriksaanRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. pemeriksaan Ranap dan No Lunas (Penjamin)
+$pemeriksaanPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End PEMERIKSAAN ---------------------------------------------------------------------------------- */
+
+
+/* Start AKOMODASI ---------------------------------------------------------------------------------- */
+//-- 1. akomodasi IGD dan Lunas 
+$akomodasiIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. akomodasi IGD dan Lunas (Penjamin)
+$akomodasiPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. akomodasi Rajal dan Lunas
+$akomodasiRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. akomodasi Rajal dan Lunas (Penjamin)
+$akomodasiPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. akomodasi Ranap dan Lunas 
+$akomodasiRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. akomodasi Ranap dan Lunas (Penjamin)
+$akomodasiPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. akomodasi IGD dan No Lunas 
+$akomodasiIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. akomodasi IGD dan No Lunas (Penjamin)
+$akomodasiPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. akomodasi Rajal dan No Lunas 
+$akomodasiRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. akomodasi Rajal dan No Lunas (Penjamin)
+$akomodasiPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. akomodasi Ranap dan No Lunas 
+$akomodasiRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. akomodasi Ranap dan No Lunas (Penjamin)
+$akomodasiPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%AKOMODASI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End AKOMODASI ---------------------------------------------------------------------------------- */
+
+
+/* Start TRANSFUSI ---------------------------------------------------------------------------------- */
+//-- 1. transfusi IGD dan Lunas 
+$transfusiIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. transfusi IGD dan Lunas (Penjamin)
+$transfusiPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. transfusi Rajal dan Lunas
+$transfusiRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. transfusi Rajal dan Lunas (Penjamin)
+$transfusiPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. transfusi Ranap dan Lunas 
+$transfusiRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. transfusi Ranap dan Lunas (Penjamin)
+$transfusiPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. transfusi IGD dan No Lunas 
+$transfusiIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. transfusi IGD dan No Lunas (Penjamin)
+$transfusiPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. transfusi Rajal dan No Lunas 
+$transfusiRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. transfusi Rajal dan No Lunas (Penjamin)
+$transfusiPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. transfusi Ranap dan No Lunas 
+$transfusiRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. transfusi Ranap dan No Lunas (Penjamin)
+$transfusiPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%TRANSFUSI%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End TRANSFUSI ---------------------------------------------------------------------------------- */
+
+/* Start RUJUKAN ---------------------------------------------------------------------------------- */
+//-- 1. rujukan IGD dan Lunas 
+$rujukanIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. rujukan IGD dan Lunas (Penjamin)
+$rujukanPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. rujukan Rajal dan Lunas
+$rujukanRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. rujukan Rajal dan Lunas (Penjamin)
+$rujukanPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. rujukan Ranap dan Lunas 
+$rujukanRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. rujukan Ranap dan Lunas (Penjamin)
+$rujukanPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. rujukan IGD dan No Lunas 
+$rujukanIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. rujukan IGD dan No Lunas (Penjamin)
+$rujukanPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. rujukan Rajal dan No Lunas 
+$rujukanRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. rujukan Rajal dan No Lunas (Penjamin)
+$rujukanPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. rujukan Ranap dan No Lunas 
+$rujukanRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. rujukan Ranap dan No Lunas (Penjamin)
+$rujukanPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RUJUKAN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End RUJUKAN ---------------------------------------------------------------------------------- */
+
+
+/* Start SEWA ---------------------------------------------------------------------------------- */
+//-- 1. sewa IGD dan Lunas 
+$sewaIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. sewa IGD dan Lunas (Penjamin)
+$sewaPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. sewa Rajal dan Lunas
+$sewaRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. sewa Rajal dan Lunas (Penjamin)
+$sewaPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. sewa Ranap dan Lunas 
+$sewaRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. sewa Ranap dan Lunas (Penjamin)
+$sewaPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. sewa IGD dan No Lunas 
+$sewaIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. sewa IGD dan No Lunas (Penjamin)
+$sewaPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. sewa Rajal dan No Lunas 
+$sewaRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. sewa Rajal dan No Lunas (Penjamin)
+$sewaPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. sewa Ranap dan No Lunas 
+$sewaRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. sewa Ranap dan No Lunas (Penjamin)
+$sewaPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%SEWA%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End SEWA ---------------------------------------------------------------------------------- */
+
+
+/* Start PENDAFTARAN ---------------------------------------------------------------------------------- */
+//-- 1. pendaftaran IGD dan Lunas 
+$pendaftaranIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. pendaftaran IGD dan Lunas (Penjamin)
+$pendaftaranPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. pendaftaran Rajal dan Lunas
+$pendaftaranRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. pendaftaran Rajal dan Lunas (Penjamin)
+$pendaftaranPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. pendaftaran Ranap dan Lunas 
+$pendaftaranRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. pendaftaran Ranap dan Lunas (Penjamin)
+$pendaftaranPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. pendaftaran IGD dan No Lunas 
+$pendaftaranIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. pendaftaran IGD dan No Lunas (Penjamin)
+$pendaftaranPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. pendaftaran Rajal dan No Lunas 
+$pendaftaranRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. pendaftaran Rajal dan No Lunas (Penjamin)
+$pendaftaranPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. pendaftaran Ranap dan No Lunas 
+$pendaftaranRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. pendaftaran Ranap dan No Lunas (Penjamin)
+$pendaftaranPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End PENDAFTARAN ---------------------------------------------------------------------------------- */
+
+
+/* Start USG ---------------------------------------------------------------------------------- */
+//-- 1. usg IGD dan Lunas 
+$usgIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. usg IGD dan Lunas (Penjamin)
+$usgPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. usg Rajal dan Lunas
+$usgRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. usg Rajal dan Lunas (Penjamin)
+$usgPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. usg Ranap dan Lunas 
+$usgRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. usg Ranap dan Lunas (Penjamin)
+$usgPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. usg IGD dan No Lunas 
+$usgIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. usg IGD dan No Lunas (Penjamin)
+$usgPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. usg Rajal dan No Lunas 
+$usgRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. usg Rajal dan No Lunas (Penjamin)
+$usgPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. usg Ranap dan No Lunas 
+$usgRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. usg Ranap dan No Lunas (Penjamin)
+$usgPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%USG%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End USG ---------------------------------------------------------------------------------- */
+
+/* Start EKG ---------------------------------------------------------------------------------- */
+//-- 1. ekg IGD dan Lunas 
+$ekgIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. ekg IGD dan Lunas (Penjamin)
+$ekgPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. ekg Rajal dan Lunas
+$ekgRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. ekg Rajal dan Lunas (Penjamin)
+$ekgPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. ekg Ranap dan Lunas 
+$ekgRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. ekg Ranap dan Lunas (Penjamin)
+$ekgPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. ekg IGD dan No Lunas 
+$ekgIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. ekg IGD dan No Lunas (Penjamin)
+$ekgPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. ekg Rajal dan No Lunas 
+$ekgRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. ekg Rajal dan No Lunas (Penjamin)
+$ekgPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. ekg Ranap dan No Lunas 
+$ekgRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. ekg Ranap dan No Lunas (Penjamin)
+$ekgPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%EKG%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End EKG ---------------------------------------------------------------------------------- */
+
+
+/* Start RM ---------------------------------------------------------------------------------- */
+//-- 1. rm IGD dan Lunas 
+$rmIGDLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 2. rm IGD dan Lunas (Penjamin)
+$rmPenjaminIGDLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and trans_form='p_igd'and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 3. rm Rajal dan Lunas
+$rmRajalLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 4. rm Rajal dan Lunas (Penjamin)
+$rmPenjaminRajalLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and rawat_inap='Y' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 5. rm Ranap dan Lunas 
+$rmRanapLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 6. rm Ranap dan Lunas (Penjamin)
+$rmPenjaminRanapLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and rawat_inap='I' and is_bayar='Y'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 7. rm IGD dan No Lunas 
+$rmIGDNoLunas 			= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 8. rm IGD dan No Lunas (Penjamin)
+$rmPenjaminIGDNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and trans_form='p_igd'and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 9. rm Rajal dan No Lunas 
+$rmRajalNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 10. rm Rajal dan No Lunas (Penjamin)
+$rmPenjaminRajalNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and rawat_inap='Y' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+											
+//-- 11. rm Ranap dan No Lunas 
+$rmRanapNoLunas 		= getFromTable("select sum(a.tagihan) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+//-- 12. rm Ranap dan No Lunas (Penjamin)
+$rmPenjaminRanapNoLunas 	= getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where (a.trans_type='LTM') and c.tdesc like '%RM%' and rawat_inap='I' and is_bayar='N'  
+											 and a.no_reg='$_GET[rg]' ");
+
+/* End RM ---------------------------------------------------------------------------------- */
+	
+
+/* Start OBAT APOTIK KLINIK---------------------------------------------------------------------------------- */
+//-- 1. obat IGD dan Lunas 
+$obatIGDLunas 			= getFromTable("select  sum(a.tagihan)  as total_obat_igd_lunas
+										from rs00008 a 
+										where   
+										(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='Y' and rawat_inap='N'  
+										and (select  sum(aa.dibayar_penjamin) from rs00008 aa where a.no_reg=aa.no_reg) <= '0' and a.no_reg='$_GET[rg]'");
+
+//-- 2. obat IGD dan Lunas (Penjamin)
+$obatPenjaminIGDLunas 	= getFromTable("select  sum(a.dibayar_penjamin)  as total_obat_igd_penjamin_lunas
+										from rs00008 a
+										left join rs00034 b on b.id=a.item_id::numeric
+										left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+										where   
+										(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='Y' and rawat_inap='N'  
+										  and a.no_reg='$_GET[rg]'");
+											
+//-- 3. obat Rajal dan Lunas
+$obatRajalLunas 		= getFromTable("select  sum(a.tagihan)  as total_obat_rajal_lunas
+										from rs00008 a 
+										where   
+										(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='Y'  and rawat_inap='Y' 
+										and (select  sum(aa.dibayar_penjamin) from rs00008 aa where a.no_reg=aa.no_reg) <= '0' and a.no_reg='$_GET[rg]' ");
+
+//-- 4. obat Rajal dan Lunas (Penjamin)
+$obatPenjaminRajalLunas 	= getFromTable("select  sum(a.dibayar_penjamin)  as Total_penjualan_lunas
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where   
+											(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='Y' and rawat_inap='Y' 
+											  and a.no_reg='$_GET[rg]'");
+											
+//-- 5. obat Ranap dan Lunas 
+$obatRanapLunas 		= getFromTable("select  sum(a.tagihan)  as Total_penjualan_lunas
+										from rs00008 a 
+										where   
+										(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='Y'  and rawat_inap='I' 
+										and (select  sum(aa.dibayar_penjamin) from rs00008 aa where a.no_reg=aa.no_reg) <= '0' and a.no_reg='$_GET[rg]'");
+
+//-- 6. obat Ranap dan Lunas (Penjamin)
+$obatPenjaminRanapLunas 	= getFromTable("select  sum(a.dibayar_penjamin)  as Total_penjualan_lunas
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where   
+											(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='Y'  and rawat_inap='I' 
+											  and a.no_reg='$_GET[rg]'");
+											
+//-- 7. obat IGD dan No Lunas 
+$obatIGDNoLunas 			= getFromTable("select  sum(a.tagihan)  as total_obat_igd_lunas
+											from rs00008 a 
+											where   
+											(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='N' and  rawat_inap='N'  
+											and (select  sum(aa.dibayar_penjamin) from rs00008 aa where a.no_reg=aa.no_reg) <= '0' and a.no_reg='$_GET[rg]'");
+
+
+//-- 8. obat IGD dan No Lunas (Penjamin)
+$obatPenjaminIGDNoLunas 	= getFromTable("select  sum(a.dibayar_penjamin)  as total_obat_igd_penjamin_lunas
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where   
+											(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='N' and  rawat_inap='N'  
+											  and a.no_reg='$_GET[rg]'");
+										
+											
+//-- 9. obat Rajal dan No Lunas 
+$obatRajalNoLunas 		= getFromTable("select  sum(a.tagihan-a.dibayar_penjamin)  as total_obat_igd_penjamin_lunas
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where   
+											(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='N' and rawat_inap='Y' 
+											and a.no_reg='$_GET[rg]'");
+											//and (select  sum(aa.dibayar_penjamin) from rs00008 aa where a.no_reg=aa.no_reg) <= '0' and a.no_reg='$_GET[rg]'");
+
+//-- 10. obat Rajal dan No Lunas (Penjamin)
+$obatPenjaminRajalNoLunas 	= getFromTable("select  sum(a.dibayar_penjamin)  as total_obat_igd_penjamin_lunas
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where   
+											(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='N' and rawat_inap='Y' 
+											  and a.no_reg='$_GET[rg]'");
+
+//-- 11. obat Ranap dan No Lunas 
+$obatRanapNoLunas 		= getFromTable("select  sum(a.tagihan)  as total_obat_igd_penjamin_lunas
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where   
+											(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='N' and rawat_inap='I' 
+											and (select  sum(aa.dibayar_penjamin) from rs00008 aa where a.no_reg=aa.no_reg) <= '0' and a.no_reg='$_GET[rg]'");
+
+//-- 12. obat Ranap dan No Lunas (Penjamin)
+$obatPenjaminRanapNoLunas 	= getFromTable("select  sum(a.dibayar_penjamin)  as total_obat_igd_penjamin_lunas
+											from rs00008 a
+											left join rs00034 b on b.id=a.item_id::numeric
+											left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+											where   
+											(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_bayar='N' and rawat_inap='I' 
+											and a.no_reg='$_GET[rg]'");
+										
+/* End OBAT APOTIK KLINIK---------------------------------------------------------------------------------- */											
+
+/* Start OBAT APOTIK UMUM---------------------------------------------------------------------------------- */
+//-- 1. Obat Apotik Umum
+$obatApotikUmum 			= getFromTable("select  sum(a.tagihan)  as apotek_umum
+											from rs00008 a 
+											where   (a.trans_type::text = 'OB2'::text) and is_coa='0'");
+
+//-- 2. Obat Apotik Umum (Penjamin)
+$obatApotikUmumPenjamin 	= getFromTable("select  sum(a.dibayar_penjamin)  as apotek_umum
+											from rs00008 a 
+											where   (a.trans_type::text = 'OB2'::text) and is_coa='0'");
+											
+/* End OBAT RETUR---------------------------------------------------------------------------------- */			
+								
+/* Start OBAT RETUR---------------------------------------------------------------------------------- */
+//-- 1. Obat Retur
+$obatRetur 			= getFromTable("select  sum(a.tagihan)  as Total_Retur_sure_banget
+									from rs00008_return a 
+									where   
+									(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and is_coa='0'
+									 and a.no_reg='$_GET[rg]'");
+
+//-- 2. Obat Retur (Penjamin)
+$obatReturPenjamin 	= getFromTable("select  sum(a.dibayar_penjamin)  as Total_Retur_sure_banget_penjamin
+							from rs00008_return a 
+							where   
+							(a.trans_type::text = 'OB1'::text OR a.trans_type::text = 'RCK'::text OR a.trans_type::text = 'BHP'::text) and   is_coa='0'
+							 and a.no_reg='$_GET[rg]'");
+				
+/* End OBAT RETUR---------------------------------------------------------------------------------- */											
+
+
+/* Start OBAT RETUR---------------------------------------------------------------------------------- */
+//-- 1. DEPOSIT RANAP
+$deposit 			= getFromTable("select  sum(a.jumlah)  as deposit
+									from rs00005 a 
+									where   
+									(a.layanan::text = 'DEPOSIT'::text AND a.kasir='BYI')
+									 and a.reg='$_GET[rg]'");
+//}
+?>

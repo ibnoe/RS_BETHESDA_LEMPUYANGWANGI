@@ -1,0 +1,33 @@
+<?
+require_once("lib/visit_setting.php");
+$sql = 	"select a.*,to_char(a.tanggal_reg,'DD MON YYYY HH24:MI:SS')as tanggal_reg,f.layanan ".
+        "from c_visit_ri a ".
+        //"left join rs00017 b on a.id_dokter = b.id ". 
+        "left join rsv0002 c on 'a.no_reg'='c.id' ".
+        "left join rs00006 d on d.id = a.no_reg ".
+        "left join rs00008 e on e.no_reg = a.no_reg ".
+        "left join rs00034 f on 'f.id' = e.item_id ".
+        "where a.no_reg='{$_GET['rg']}' and a.id_ri= '{$_GET["polinya"]}' and a.oid= '{$_GET["oid"]}' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+							
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			
+    		echo "<tr><td  valign=top align=center>";
+    		$f = new ReadOnlyForm();
+			//$f->text("Tanggal / Jam Pengisian","<b>".$tgl_sekarang);		
+			$f->textdoc("f_vis_1",$visit_ri_dokumen_surat_pengantar["vis_1"."W"],20,10 ,$d["vis_1"],"DISABLED");
+			$f->execute();	
+    		echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			//include(rm_tindakan_ri);
+  			
+  			echo "</td></tr></table>";
+
+?>

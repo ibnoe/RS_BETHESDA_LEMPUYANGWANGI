@@ -1,0 +1,16 @@
+-- Table: master_karcis
+
+DROP TABLE master_karcis;
+
+CREATE TABLE master_karcis
+(
+  id character varying(3) NOT NULL,
+  jmk character varying,
+  code character varying,
+  harga numeric,
+  CONSTRAINT master_karcis_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE master_karcis OWNER TO postgres;

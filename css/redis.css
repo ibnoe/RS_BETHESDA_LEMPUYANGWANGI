@@ -1,0 +1,238 @@
+.klir{
+    clear:both;
+}
+hr{
+    padding: 0px;
+    margin: 0px;
+}
+#container{
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+
+}
+#container-content{
+    margin: 0 auto;
+    width: 100%;   
+    min-height: 700px;
+    background-repeat: repeat-x;
+
+}
+#shadow{
+    min-height: 300px;
+    padding: 20px;
+    border-radius: 3px;
+    box-shadow: inset 0 0 20px #DDDDDD;
+}
+#klinik-title{
+    padding: 5px;
+    width: 1240px;
+    color: #FFFFFF;
+    font-size: 18px;
+    margin-top: -34px;
+    position: absolute;
+    text-align: right;
+    text-shadow: 0.1em 0.1em 0.2em Grey;
+}
+#main{
+    background-color: #FFFFFF;
+    padding: 5px;
+    margin: 0 10px ;
+    min-height: 300px;
+    border: 1px solid #DDDDDD;
+    border-radius: 3px;
+    width: 1240px;
+}
+#content{
+    margin-left: 135px;
+    margin-top: -35px;
+    width: 1070px;
+}
+#head-er{
+    width: 100%;
+    margin: 0 auto;
+    background: url("../images/header_01.png");
+    background-repeat: no-repeat;
+    display: block;
+    height: 120px;
+    position: relative;
+
+}
+#foot-er{
+    width: 100%;
+    margin: 0 auto;
+    /*    background: url("../images/ftr2.png");*/
+    background-repeat: no-repeat;
+    display: block;
+    height: 72px;
+    text-align: center;
+    padding-top: 10px;
+
+}
+#om-logo{
+    display: block;
+    margin-left: 125px;
+    margin-top: 5px;
+    position: absolute;
+}
+#the-navi{
+    color: #439DC3;
+    font-size: 23px;
+    margin-bottom: 9px;
+    margin-left: -13px;
+    margin-top: -16px;
+    text-shadow: 0.1em 0.1em 0.2em Grey;
+}
+/* sidebar */
+.sidebar {
+    float: left;
+    width: 185px;
+    margin-left: -75;
+}
+.divy{
+    display: block;
+    background: url("../images/divider_03.png");
+    width: 10px;
+
+}
+/* menu level 1 */
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li.root {
+    display: block;
+    position: relative;
+    background: url("../images/menu-bg_03.png");
+    background-repeat: no-repeat;
+    height: 30px;
+    margin-top: -15px;
+    width: 150px;
+}
+/* menu level 2 */
+.sidebar ul li ul {
+    display: none;
+    left: 140px;
+    list-style: none;
+    min-width: 210px;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    z-index: 3;
+    background: #ffffff;
+    margin-left: 10px;
+}
+
+.sidebar ul li:hover ul {
+    display: block;
+}
+
+.sidebar ul li ul li {
+    display: block;
+    background: #439dc3;
+    border-radius: 3px;
+    margin-top: 5px;
+    /*    box-shadow: 3px 3px 3px #439dc3;*/
+
+}
+
+/* link menu */
+.m-title{
+    margin-left: 20px;
+    margin-top: 3px;
+    font-weight: bold;
+
+}
+.m-title a{
+    font-weight: bold;
+    font-size: 12px;
+    color: #ffffff;
+
+}
+.sidebar ul li {
+    color: #ffffff;
+    display: block;
+    font-size: 12px;
+    padding: 5px;
+}
+.sidebar ul li ul li a {
+    color: #ffffff;
+    display: block;
+    font-size: 12px;
+
+}
+
+.sidebar ul li:hover,
+.sidebar ul li a:hover {
+    text-decoration: none;
+}
+
+.sidebar ul li ul li:hover {
+    background: #2a6178;
+    text-decoration: none;
+}
+/* login */
+#notif{
+    margin-bottom: 10px;
+    margin-top: -25px;
+    text-align: left;
+
+}
+.log-submit input{
+    width: 100px;
+}
+.log-fix input{
+    width: 200px;
+
+}
+.log-fix{
+    margin-bottom: 5px;
+    margin-right: 150px;
+
+}
+.log-form{
+margin-left: 300px;
+    margin-top: -15px;
+}
+#log-box img{
+    left: 20px;
+    position: relative;
+    top: 60px;
+}
+#container-log{
+    margin-top: 150px;
+}
+#log-head{
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 20px;
+    /*background-image: -moz-linear-gradient(center top , #198D19, #086532);*/
+    /*background-image: -webkit-gradient(linear, left top, left bottom, from(#198D19), to(#086532));*/
+	background-color: #198D19;
+    background-repeat: repeat-x;
+    width: 250px;
+    margin-left: 630px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.5);
+    border-radius:4px 4px 0 0 ;
+    padding: 5px;
+    text-align: left;
+
+}
+#log-box{
+
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.5);
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 11px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.5);
+    font-family: arial,tahoma,verdana;
+/*    font-size: 12px;*/
+    position: relative;
+    width: 600px;
+    height: 200px;
+/*    background-color: #DDDDDD ;*/
+    background-image: url("../images/login2_032.png");
+    border-radius:10px;
+    margin: 0 auto;
+
+}

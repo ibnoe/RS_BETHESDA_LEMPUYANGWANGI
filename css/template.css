@@ -1,0 +1,91 @@
+html {
+ 
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+body {
+	margin: 0;
+	padding: 5;
+}
+
+.font01 {
+	font-family: verdana;
+	font-size: 10px;
+	font-weight: bold;
+	text-transform: capitalize;
+	color: #2D405B;
+}
+
+.font02 {
+	font-family: verdana;
+	font-size: 10px;
+	font-weight: bold;
+	text-transform: capitalize;
+	color: #2D405B;
+	text-align: right;
+}
+
+.bgtop {
+	height: 10px;
+	background: url("../image/bg/border-up.gif") repeat-x;
+}
+
+.bgbottom {
+	height: 10px;
+	background: url("../image/bg/border-bottom.gif") 0 100% repeat-x;
+}
+
+.bgleft {
+	width: 10px;
+	background: url("../image/bg/shadow-left.gif") 100% 0 repeat-y;
+}
+
+.bgright {
+	width: 10px;
+	background: url("../image/bg/shadow-right.gif") repeat-y;
+}
+
+.bar {	
+	background: url("../image/bg/bar-2.png") repeat-x;
+}
+
+.bgdaftar {	
+	background: url("../image/bg/stetoskop.png") 100% 100% no-repeat;
+}
+.TITLE_SIM {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      20px;
+  
+    COLOR:          #2D405B;
+    PADDING-LEFT:   20px;
+    PADDING-RIGHT:  20px ;
+    font-weight: bold;
+}
+.TITLE_SIM_HEADER {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      18px;
+  
+    COLOR:          #2D405B;
+    PADDING-LEFT:   20px;
+    PADDING-RIGHT:  20px ;
+    font-weight: bold;
+}
+.SUBTITLE_SIM {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      12px;
+ 
+    COLOR:          #2D405B;
+    PADDING-LEFT:   8px;
+    PADDING-RIGHT:  8px;
+ 
+}
+.SUBTITLE_SIM_FOOTER {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      12px;
+ 
+    COLOR:          #FFFFFF;
+    PADDING-LEFT:   8px;
+    PADDING-RIGHT:  8px;
+ 
+}

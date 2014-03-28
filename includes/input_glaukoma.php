@@ -1,0 +1,115 @@
+<? // 30/12/2003
+   // sfdn, 20-04-2004
+   // sfdn, 30-04-2004
+
+$PID = "input_glaukoma";
+$SC = $_SERVER["SCRIPT_NAME"];
+
+require_once("lib/dbconn.php");
+require_once("lib/form.php");
+require_once("lib/class.PgTable.php");
+require_once("lib/functions.php");
+
+if (empty($_GET[sure])) {
+if(isset($_GET["e"])) {
+    if ($_GET["e"] != "new") {
+        $r = pg_query($con, "select * from rl100020b where id = '".$_GET["e"]."'");
+
+
+    
+        $n = pg_num_rows($r);
+        if($n > 0) $d = pg_fetch_object($r);
+        pg_free_result($r);
+    }
+
+    echo "<DIV ALIGN=RIGHT><A HREF='$SC?p=$PID'>".icon("back","Kembali")."</a></DIV>";
+
+
+
+    if($n > 0) {
+        $f = new Form("actions/glaukoma.update.php", "POST");
+        title("Edit Laporan");
+        $f->subtitle("Update Glaukoma");
+        $f->hidden("id","$d->id");
+        $f->text("id","NO",6,6,$d->id,"DISABLED");
+    } else {
+        $f = new Form("actions/glaukoma.insert.php");
+        title("Edit Laporan");
+        $f->subtitle("Tambah Data Glaukoma");
+        $f->hidden("id","new");
+        $f->text("id","No",12,12,"<OTOMATIS>","DISABLED");
+    }
+    $f->PgConn = $con;
+    $f->text("f_kegiatan","Jenis Kegiatan",40,50,$d->kegiatan);	
+    $f->text("f_turun_obat_min","Kualitas Turun Obat (-)",30,30,$d->turun_obat_min);
+	$f->text("f_turun_obat_plus","Kualitas Turun Obat (+)",30,30,$d->turun_obat_plus);
+	$f->text("f_tetap","Kualitas Obat Tetap/Meningkat",30,30,$d->tetap);
+	$f->text("f_kuantitas","Jumlah Kuantitas",30,30,$d->kuantitas);
+	$f->submit(" Simpan ");
+    $f->execute();
+} else {
+    // search box
+    title("<img src='icon/icon-view.png' align='absmiddle' >  Edit Laporan Pembedahan Mata - Glaukoma");
+lihat_laporan("pembedahan_mata");
+    echo "<DIV ALIGN=RIGHT><TABLE BORDER=0><FORM ACTION=$SC NAME=Form2><TR>";
+    echo "<INPUT TYPE=HIDDEN NAME=p VALUE=$PID>";
+//    echo "<TD><INPUT TYPE=TEXT NAME=search VALUE='".$_GET["search"]."'></TD>";
+  //  echo "<TD><INPUT TYPE=SUBMIT VALUE=' Cari '></TD>";
+     echo "<TD >Pencarian:<INPUT TYPE=TEXT NAME=search VALUE='".$_GET["search"]."'></TD>";
+    echo "<TD><input onchange=\"Form2.submit();\" src=\"icon/ico_find.gif\" title=\"Cari\" type=\"image\"> </TD>";
+
+ 
+    echo "</TR></FORM></TABLE></DIV>";
+
+    $t = new PgTable($con, "100%");
+    $t->SQL = "select kegiatan, turun_obat_min, turun_obat_plus, tetap, kuantitas, id as href FROM rl100020b order by id";            
+              
+    $t->ColHeader = array("Jenis Kegiatan", "Kualitas Turun Obat (-)", "Kualitas Turun Obat (+)","Kualitas Obat Tetap/Meningkat","Jumlah   Kuantitas", "Edit");
+    $t->ShowRowNumber = true;
+ //   $t->ColAlign[5] = "CENTER";
+    /*
+    $t->columnSort(1, "nama");
+    $t->columnSort(2, "nama", true);
+    $t->columnSort(3, "nama_keluarga");
+    $t->columnSort(4, "alm_tetap");
+    $t->columnSort(5, "kota_tetap");
+    */
+    $t->RowsPerPage = $ROWS_PER_PAGE;
+    /*
+    $t->Filter = "upper(nama) LIKE '%".strtoupper($_GET["search"])."%' ".
+                 "OR mr_no LIKE '%".$_GET["search"]."%'";
+    */
+        $t->ColAlign[5] = "CENTER";
+
+    $t->ColFormatHtml[5] = "<A CLASS=TBL_HREF HREF='$SC?p=$PID&e=<#5#>'>".icon("edit","Edit")."</A>".
+    						"<A CLASS=TBL_HREF HREF='".
+            "actions/glaukoma.delete.php?p=$PID".
+            "&e=<#5#>".
+            "'>".icon("delete","Hapus")."</A>".
+            "</nobr>"; 
+    /*
+    $t->ColFormatHtml[4] = "<nobr><A CLASS=TBL_HREF HREF=''>".icon("view","View")."</A> &nbsp; ".
+                           "<A CLASS=TBL_HREF HREF='$SC?p=$PID&e=<#4#>'>".icon("edit","Edit")."</A></nobr>";
+    */
+
+    $t->execute();
+
+    echo "<BR><DIV ALIGN=LEFT><img src=\"icon/user.gif\" align=absmiddle ><A CLASS=SUB_MENU ".
+         "HREF='index2.php?p=$PID&e=new'>Tambah Data </A></DIV>";
+}
+}else{
+	$data = getFromTable("select kegiatan from rl100020b where id='".$_GET[e]."'");
+
+    echo "<div align=center>";
+    echo "<form action='actions/glaukoma.delete.php' method='get'>";
+    echo "<font color=red size=3>PERINGATAN !</font><br>";
+    echo "<font class=SUB_MENU>Data Laporan <font color=navy>'".$data."'</font> akan Dihapus.</font><br><br>";
+    echo "<input type=hidden name=p value=$PID>";
+    echo "<input type=hidden name=e value=".$_GET[e].">";
+    
+    echo "<input type=submit name=sure value='YA'>&nbsp;";
+    echo "<input type=submit name=sure value='TIDAK'>";
+    echo "</form>";
+    echo "</div>";
+}
+?>

@@ -1,0 +1,123 @@
+<?php
+/*
+		-- edited 120210
+		-- mengganti type data b.id menjadi integer
+		-- menghilangkan fungsi trim()
+		-- mengganti type data f.id menjadi integer
+		*/
+$sql = "select a.*,g.tdesc,b.nama,h.nama as perawat,to_char(a.tanggal_reg,'dd Month yyyy')as tanggal_reg,f.layanan 
+						from c_visit a 
+						left join rs00017 b on a.id_dokter = b.id
+						left join rs00017 h on a.id_perawat = h.id
+						left join rsv0002 c on a.no_reg=c.id 
+						left join rs00006 d on d.id = a.no_reg
+						left join rs00008 e on e.no_reg = a.no_reg
+						--left join rs00034 f on f.id = trim(e.item_id,0)
+						left join rs00034 f on 'f.id' = e.item_id
+						left join rs00001 g on g.tc_poli = a.id_poli and g.tt ='LYN'
+						where a.no_reg='{$_GET['rg']}' and a.id_poli ='".$setting_poli["kebidanan_ginekologi"]."' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>PEMERIKSAAN PASIEN KLINIK GINEKOLOGI</div>";
+			echo "</td></tr>";
+    		echo "<tr><td valign=top>";
+    		$f = new ReadOnlyForm();
+			$f->text("Tanggal Pemeriksaan","<b>".$d["tanggal_reg"]);
+			$f->title1("<U>PEMERIKSAAN UMUM</U>","LEFT");
+			$f->text($visit_ginekologi["vis_1"],$d[3] );
+			$f->text($visit_ginekologi["vis_2"],$d[4]."&nbsp;Cm");
+			$f->text($visit_ginekologi["vis_3"],$d[5]."&nbsp;mm Hg");
+			//$f->text($visit_ginekologi["vis_4"],$d[6]."&nbsp;Celcius");
+
+			$f->text($visit_ginekologi["vis_5"],$d[7]);
+			//$f->text($visit_ginekologi["vis_7"],$d[9]);
+			$f->text($visit_ginekologi["vis_6"],$d[8]."&nbsp;Kg");
+			//$f->text($visit_ginekologi["vis_8"],$d[10]."&nbsp;/Menit");    
+			if ($d[11] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_9"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			if ($d[12] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_10"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			if ($d[13] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_11"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			if ($d[14] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_12"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			if ($d[15] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_13"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			if ($d[16] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_14"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			
+			//$f->title1("Pembesaran Kelenjar Getah Bening","LEFT");
+			//$f->text("Supraclavikula",$d[17]."&nbsp;"."<b>x</b>"."&nbsp;".$d[18]."&nbsp;"."<b>x</b>"."&nbsp;".$d[19]."&nbsp;"."Cm");
+			//$f->text("Inguil",$d[20]."&nbsp;"."<b>x</b>"."&nbsp;".$d[21]."&nbsp;"."<b>x</b>"."&nbsp;".$d[22]."&nbsp;"."Cm");
+			//$f->text("Aksila",$d[23]."&nbsp;"."<b>x</b>"."&nbsp;".$d[24]."&nbsp;"."<b>x</b>"."&nbsp;".$d[25]."&nbsp;"."Cm");
+			$f->title1("Benjolan / Tumor Lokasi","LEFT");
+			if ($d[26] == null) {
+				null;
+			}else {$f->text($d[26],$d[27]."&nbsp;"."<b>x</b>"."&nbsp;".$d[28]."&nbsp;"."<b>x</b>"."&nbsp;".$d[29]."&nbsp;"."Cm");}
+			//$f->execute();
+			
+			//echo "</td><td valign=top>";
+    		//$f = new ReadOnlyForm();
+			if ($d[30] == null) {
+				null;
+			}else {$f->text($d[30],$d[31]."&nbsp;"."<b>x</b>"."&nbsp;".$d[32]."&nbsp;"."<b>x</b>"."&nbsp;".$d[33]."&nbsp;"."Cm");}			
+			if ($d[34] == null) {
+				null;
+			}else {$f->text($d[34],$d[35]."&nbsp;"."<b>x</b>"."&nbsp;".$d[36]."&nbsp;"."<b>x</b>"."&nbsp;".$d[37]."&nbsp;"."Cm");}
+			if ($d[38] == null) {
+				null;
+			}else {$f->text($d[38],$d[39]."&nbsp;"."<b>x</b>"."&nbsp;".$d[40]."&nbsp;"."<b>x</b>"."&nbsp;".$d[41]."&nbsp;"."Cm");}
+			$f->text($visit_ginekologi["vis_40"],$d[42] );
+			$f->execute();
+			
+			echo "</td><td valign=top>";
+    		$f = new ReadOnlyForm();
+			
+			$f->title1("<U>PEMERIKSAAN GINEKOLOGI</U>","LEFT");
+			$f->title1("Porsio","LEFT");
+			if ($d[43] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_41"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			if ($d[44] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_42"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			if ($d[45] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_43"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			if ($d[46] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_44"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			if ($d[47] == null) {
+				null;
+			}else {$f->text($visit_ginekologi["vis_45"],"<IMG BORDER=0 SRC='../onemedic_kso_siti/images/icon-ok.png'>");}
+			$f->text("Ukuran Tumor",$d[48]."&nbsp;"."<b>x</b>"."&nbsp;".$d[49]."&nbsp;"."<b>x</b>"."&nbsp;".$d[50]."&nbsp;"."Cm");
+			$f->text($visit_ginekologi["vis_49"],$d[51]);
+			$f->text($visit_ginekologi["vis_50"],$d[52]."&nbsp;"."Cm");
+			$f->text($visit_ginekologi["vis_51"],$d[53] );
+			$f->text($visit_ginekologi["vis_52"],$d[54] );
+			$f->text($visit_ginekologi["vis_53"],$d[55]."&nbsp;"."g%" );
+			$f->text($visit_ginekologi["vis_54"],$d[56]."&nbsp;"."/mm3" );
+			$f->title1("<U>DOKTER PEMERIKSA</U>","LEFT");
+			$f->text("Dokter",$d["nama"]);
+			$f->text("Perawat",$d["perawat"]);
+			$f->execute();
+    		echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+?>

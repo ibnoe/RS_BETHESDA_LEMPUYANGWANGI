@@ -1,0 +1,139 @@
+<?php // Nugraha, Sun May  9 15:04:53 WIT 2004
+      // sfdn, 01-06-2004
+
+session_start();
+
+$PID = "370";
+
+require_once("../lib/dbconn.php");
+require_once("../lib/form.php");
+require_once("../lib/functions.php");
+require_once("../lib/class.PgTrans.php");
+
+
+
+
+/* Posting */
+
+$flag= $_POST["flag"];
+$reg = $_POST["rg"];
+$sub = 4;
+// data terakhir (recor terakhir) seorang pasian tercatat sbg. penghuni bangsal
+$id_max = getFromTable("select max(id) from rs00010 where no_reg = '$reg'");
+
+$id_bangsal = getFromTable("select bangsal_id from rs00010 where no_reg = '$reg' order by id desc");
+
+$skrg = time();
+$ts_check_in = date("Y-m-d H:i:s", $skrg);
+$tgl = date("d", $skrg);
+$bln = date("m", $skrg);
+$thn = date("Y", $skrg);
+$jam = date("H",$skrg);
+
+if ($jam >= 12) {
+    $ts_calc_start = date("Y-m-d", $skrg).
+        " 12:00:00";
+} else {
+    $ts_calc_start = date("Y-m-d", mktime(0,0,0,$bln,$tgl-1,$thn)).
+        " 12:00:00";
+}
+
+$x = pg_query($con,
+        "select a.id, a.ts_check_in::date, e.bangsal, d.bangsal as ruangan, b.bangsal as bed, ".
+        "    c.tdesc as klasifikasi_tarif, ".
+        "    extract(day from current_timestamp - a.ts_calc_start) as qty, ".
+        "    d.harga as harga_satuan, ".
+        "    extract(day from current_timestamp - a.ts_calc_start) * d.harga as harga ".
+        "from rs00010 as a ".
+        "    join rs00012 as b on a.bangsal_id = b.id ".
+        "    join rs00012 as d on substr(b.hierarchy,1,6) || '000000000' = d.hierarchy ".
+        "    join rs00012 as e on substr(b.hierarchy,1,3) || '000000000000' = e.hierarchy ".
+        "    join rs00001 as c on d.klasifikasi_tarif_id = c.tc and c.tt = 'KTR' ".
+        "where to_number(a.no_reg,'9999999999') = $reg and ts_calc_stop is null");
+$xxx = pg_fetch_object($x);
+
+$SQL = "update rs00010 set ts_calc_stop=CURRENT_TIMESTAMP where id = '$id_max'";
+ $SQL2 = "insert into rs00008 (" .
+                "id,            trans_type,  trans_form, trans_group, tanggal_trans, " .
+                "tanggal_entry, waktu_entry, no_reg, ".
+                "qty,           harga,       tagihan".
+            ") values (".
+                "nextval('rs00008_seq'), 'POS', '$PID', nextval('rs00008_seq_group'), CURRENT_DATE, " .
+                "CURRENT_DATE, CURRENT_TIME, '$reg',  " .
+                $xxx->qty.",".$xxx->harga_satuan.",".$xxx->harga.")";
+
+$SQL3 = "insert into rs00005 ".
+        "VALUES(currval('kasir_seq'), '$reg', CURRENT_DATE, 'RIN', 'N', 'N', 99996, $xxx->harga, 'N') ";
+
+
+pg_query("select nextval('kasir_seq')");
+
+pg_query($con, $SQL2);
+pg_query($con, $SQL);
+pg_query($con, $SQL3);
+
+/* Daftarkan baru */
+
+// by yudha 
+if (!$_SESSION["BANGSAL"]["id"]) {
+	 $_SESSION["BANGSAL"]["id"] = $_POST["kode_bangsal"];
+	}
+//**
+
+$ts_check_in = date("Y-m-d", mktime(0,0,0,$_POST["tanggalM"],$_POST["tanggalD"],$_POST["tanggalY"])).
+    " ".$_POST["jam"].":00";
+$jam = (int) substr($_POST["jam"],0,2);
+
+if ($jam >= 12) {
+    $ts_calc_start = date("Y-m-d", mktime(0,0,0,$_POST["tanggalM"],$_POST["tanggalD"],$_POST["tanggalY"])).
+        " 12:00:00";
+} else {
+    $ts_calc_start = date("Y-m-d", mktime(0,0,0,$_POST["tanggalM"],$_POST["tanggalD"]-1,$_POST["tanggalY"])).
+        " 12:00:00";
+}
+
+$SQL = "insert into rs00010 (id, no_reg, bangsal_id, ts_check_in, ts_calc_start) ".
+       "values (nextval('rs00010_seq'),'".$_POST["rg"]."','".$_SESSION["BANGSAL"]["id"].
+       "','$ts_check_in'::timestamp,'$ts_calc_start'::timestamp)";
+
+// tambahan sfdn, 31-05-2004
+$r1 = pg_query($con,
+    "select tipe, jenis_kedatangan_id as rujukan, id as no_reg, tanggal_reg, rawat_inap ".
+    "from rs00006 ".
+    "where id = '".$_POST["rg"]."'");
+$n1 = pg_num_rows($r1);
+if($n1 > 0) $d1 = pg_fetch_object($r1);
+pg_free_result($r1);
+$reg_count = getFromTable("select count(mr_no) from rs00006 ".
+            "where mr_no = (select mr_no from rs00006 where id = '".$_POST["rg"]."') ".
+            "   and id <= '".$_POST["rg"]."'");
+$baru    = "Y";
+$noreg   = $_POST["rg"];
+$bangsal = $_SESSION["BANGSAL"]["id"];
+
+
+$asal	 = $_POST["asal"];
+$tglmasuk= $ts_check_in;
+
+if ($reg_count > 1 ) $baru = "T";
+
+$SQL1 = "insert into rs00008 (id,trans_type, is_inout, qty,  ".
+        "		is_baru,no_reg, tanggal_trans,datang_id,trans_group) ".
+        "values (nextval('rs00008_seq'),'RIN','I',1, ".
+        "'$baru','$noreg','$tglmasuk','$asal', nextval('rs00008_seq_group'))";
+
+$SQL2 = "update rs00006 set flag='$flag' where id='".$_POST["rg"]."'"; 
+
+ 
+ 
+unset($_SESSION["BANGSAL"]);
+pg_query($con, $SQL);
+pg_query($con, $SQL1);
+pg_query($con, $SQL2);  
+ 
+
+header("Location: ../index2.php?p=$PID");
+exit;
+?>
+
+

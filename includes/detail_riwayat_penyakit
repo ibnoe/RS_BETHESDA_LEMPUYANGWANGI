@@ -1,0 +1,86 @@
+<?
+require_once("lib/visit_setting.php");
+$sql = 	"select a.*,to_char(a.tanggal_reg,'DD MON YYYY HH24:MI:SS')as tanggal_reg,f.layanan,(g.nama)as merawat,(h.nama)as mengirim,(i.nama)as konsul ".
+        "from c_visit_ri a ". 
+        "left join rsv0002 c on a.no_reg=c.id 
+        left join rs00006 d on d.id = a.no_reg 
+        left join rs00008 e on e.no_reg = a.no_reg 
+        left join rs00034 f on f.id::text = e.item_id
+        left join rs00017 g on a.vis_1 = g.id::text 
+        left join rs00017 h on a.vis_2 = h.id::text
+		left join rs00017 i on a.id_dokter::text = i.id::text		".
+        "where a.no_reg='{$_GET['rg']}' and a.id_ri= '{$_GET["polinya"]}' and a.oid= '{$_GET["oid"]}' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>PEMERIKSAAN PASIEN</div>";
+			echo "</td></tr>";
+    		echo "<tr><td valign=top>";
+    		$f = new ReadOnlyForm();
+			$f->text("<B>".$visit_ri_riwayat_penyakit["vis_1"]."</B>",$d["merawat"]);
+			$f->text("<B>".$visit_ri_riwayat_penyakit["vis_2"]."</B>",$d["mengirim"] );
+			$f->text("<B>"."Dokter Konsul"."</B>",$d["konsul"] );
+			$f->text($visit_ri_riwayat_penyakit["vis_3"],$d[6]);
+			$f->text($visit_ri_riwayat_penyakit["vis_4"],$d[7] );
+    		$f->title1("<U>ANAMNESA</U>","LEFT");	
+			$f->text($visit_ri_riwayat_penyakit["vis_5"],$d[8]);
+			$f->title1("<U>STATUS PRAESENS</U>","LEFT");
+			$f->text($visit_ri_riwayat_penyakit["vis_6"],$d[9]);
+			$f->text($visit_ri_riwayat_penyakit["vis_7"],$d[10]);
+			$f->text($visit_ri_riwayat_penyakit["vis_8"],$d[11] );    
+			$f->text($visit_ri_riwayat_penyakit["vis_9"],$d[12]);
+			$f->text($visit_ri_riwayat_penyakit["vis_10"],$d[13]."&nbsp;Celcius" );
+			$f->text($visit_ri_riwayat_penyakit["vis_11"],$d[14]);
+			$f->text($visit_ri_riwayat_penyakit["vis_12"],$d[15] );	
+			$f->text($visit_ri_riwayat_penyakit["vis_13"],$d[16] );
+			$f->text($visit_ri_riwayat_penyakit["vis_14"],$d[17]);
+			$f->text($visit_ri_riwayat_penyakit["vis_15"],$d[18]);
+			$f->text($visit_ri_riwayat_penyakit["vis_16"],$d[19]);
+			$f->text($visit_ri_riwayat_penyakit["vis_17"],$d[20] );	
+			$f->text($visit_ri_riwayat_penyakit["vis_18"],$d[21] );
+			$f->text($visit_ri_riwayat_penyakit["vis_19"],$d[22]);
+			$f->text($visit_ri_riwayat_penyakit["vis_20"],$d[23]);
+			$f->text($visit_ri_riwayat_penyakit["vis_21"],$d[24]);
+			$f->execute();
+			echo "</td><td valign=top>";
+    		$f = new ReadOnlyForm();
+			
+			$f->text($visit_ri_riwayat_penyakit["vis_22"],$d[25] );	
+			$f->text($visit_ri_riwayat_penyakit["vis_23"],$d[26]."&nbsp;mm Hg" );
+			$f->text($visit_ri_riwayat_penyakit["vis_24"],$d[27]."&nbsp;/ Menit");
+			$f->text($visit_ri_riwayat_penyakit["vis_25"],$d[28]);
+			$f->text($visit_ri_riwayat_penyakit["vis_26"],$d[29]);
+			$f->text($visit_ri_riwayat_penyakit["vis_27"],$d[30] );	
+			$f->text($visit_ri_riwayat_penyakit["vis_28"],$d[31] );
+			$f->text($visit_ri_riwayat_penyakit["vis_29"],$d[32]);
+			$f->text($visit_ri_riwayat_penyakit["vis_30"],$d[33]);
+			$f->text($visit_ri_riwayat_penyakit["vis_31"],$d[34]);
+			$f->text($visit_ri_riwayat_penyakit["vis_32"],$d[35] );
+			$f->text($visit_ri_riwayat_penyakit["vis_33"],$d[36] );
+				
+			$f->title1("<U>LABORATORIUM</U>","LEFT");
+			$f->text($visit_ri_riwayat_penyakit["vis_34"],$d[37]);
+			$f->text($visit_ri_riwayat_penyakit["vis_35"],$d[38]);
+			$f->text($visit_ri_riwayat_penyakit["vis_36"],$d[39]);
+			$f->text($visit_ri_riwayat_penyakit["vis_37"],$d[40] );	
+			$f->text($visit_ri_riwayat_penyakit["vis_38"],$d[41] );
+			$f->text($visit_ri_riwayat_penyakit["vis_39"],$d[42]);
+			$f->text($visit_ri_riwayat_penyakit["vis_40"],$d[43]);
+			$f->text($visit_ri_riwayat_penyakit["vis_41"],$d[44]);
+			$f->text($visit_ri_riwayat_penyakit["vis_42"],$d[45] );	
+			$f->text($visit_ri_riwayat_penyakit["vis_43"],$d[46] );
+			$f->text($visit_ri_riwayat_penyakit["vis_44"],$d[47]);
+			$f->execute();
+    		echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+?>

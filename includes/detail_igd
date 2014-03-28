@@ -1,0 +1,79 @@
+<?
+$sql = "select a.*,b.nama,(g.nama)as jaga,(h.nama)as perawat,to_char(a.tanggal_reg,'dd Month yyyy')as tanggal_reg 
+						from c_visit a 
+						left join rs00017 b on a.id_dokter = b.id
+						left join rsv0002 c on a.no_reg = c.id 
+						left join rs00006 d on d.id = a.no_reg
+						left join rs00008 e on e.no_reg = a.no_reg
+						left join rs00034 f on 'f.id' = e.item_id
+						left join rs00017 g on a.id_dokter = g.id
+						left join rs00017 h on a.id_perawat = h.id
+						where a.no_reg='{$_GET['rg']}' and a.id_poli ='".$setting_poli["igd"]."' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>PEMERIKSAAN PASIEN KLINIK IGD</div>";
+			echo "</td></tr>";
+    		echo "<tr><td valign=top>";
+    		$f = new ReadOnlyForm();
+			$f->text("Tanggal Pemeriksaan","<b>".$d["tanggal_reg"]);
+			//$f->title1("ANAMNESA","LEFT");
+			$f->text($visit_igd["vis_1"],$d[3] );
+			$f->text($visit_igd["vis_2"],$d[4]);
+			$f->text($visit_igd["vis_3"],$d[5]);
+			$f->text($visit_igd["vis_4"],$d[6] );	
+			$f->text($visit_igd["vis_5"],$d[7] );
+			//$f->text($visit_igd["id_dokter"],$d["jaga"]);
+			$f->text("Perawat",$d["perawat"]);
+			$f->text($visit_igd["vis_8"],$d[10] );    
+			$f->text($visit_igd["vis_9"],$d[11]);
+			$f->text($visit_igd["vis_10"],$d[12]);
+			$f->text($visit_igd["vis_11"],$d[13]);
+			$f->text($visit_igd["vis_12"],$d[14] );
+			$f->title1("<U>PEMERIKSAAN FISIK</U>","LEFT");	
+			$f->text($visit_igd["vis_13"],$d[15]."&nbsp;mm Hg" );
+			$f->text($visit_igd["vis_14"],$d[16]."&nbsp;/Menit");
+			$f->text($visit_igd["vis_15"],$d[17]."&nbsp;Celcius");
+			$f->text($visit_igd["vis_16"],$d[18]);
+			$f->text($visit_igd["vis_17"],$d[19]);
+			$f->text($visit_igd["vis_18"],$d[20]);
+			$f->text($visit_igd["vis_19"],$d[21]);
+			$f->text($visit_igd["vis_20"],$d[22]);
+			$f->execute();
+			echo "</td><td valign=top>";
+    		$f = new ReadOnlyForm();
+			$f->text($visit_igd["vis_21"],$d[23]);
+			$f->text($visit_igd["vis_22"],$d[24]);
+			$f->text($visit_igd["vis_23"],$d[25]);
+			$f->text($visit_igd["vis_24"],$d[26]);
+			$f->text($visit_igd["vis_25"],$d[27]);
+			$f->text($visit_igd["vis_26"],$d[28]);
+			$f->title1("<U>ANGGOTA GERAK</U>","LEFT");
+			$f->text($visit_igd["vis_27"],$d[29]);
+			$f->text($visit_igd["vis_28"],$d[30]);
+			$f->text($visit_igd["vis_29"],$d[31]);
+			$f->text($visit_igd["vis_30"],$d[32]);
+			$f->text($visit_igd["vis_31"],$d[33]);
+			$f->text($visit_igd["vis_32"],$d[34]);
+			$f->title1("<U>GLASGOW COM SCALE</U>","LEFT");
+			$f->text($visit_igd["vis_33"],$d[35]);
+			$f->text($visit_igd["vis_34"],$d[36]);
+			$f->text($visit_igd["vis_35"],$d[37]);
+			$f->title1("<U>DIAGNOSA</U>","LEFT");
+			$f->text($visit_igd["vis_36"],$d[38]);
+			$f->title1("<U>DOKTER JAGA</U>","LEFT");
+			$f->text("Nama",$d["jaga"]);
+			$f->execute();
+    		echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+?>

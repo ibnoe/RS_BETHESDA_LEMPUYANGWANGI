@@ -1,0 +1,12 @@
+<graph caption='Grafik 10 Penyakit Terbanyak' xAxisName='Penyakit' yAxisName='Jumlah' decimalPrecision='0' formatNumberScale='0'>
+<set name='1' value='250' color='AFD8F8' />
+<set name='2' value='200' color='F6BD0F' />
+<set name='3' value='150' color='8BBA00' />
+<set name='4' value='100' color='FF8E46'/>
+<set name='5' value='50' color='008E8E'/>
+<set name='6' value='25' color='D64646'/>
+<set name='7' value='20' color='8E468E'/>
+<set name='8' value='15' color='588526'/>
+<set name='9' value='10' color='B3AA00'/>
+<set name='10' value='5' color='008ED6'/>
+</graph>

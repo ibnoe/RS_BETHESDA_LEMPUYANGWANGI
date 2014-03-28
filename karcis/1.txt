@@ -1,0 +1,5 @@
+INSERT INTO rs00001(tt, tc, tdesc, "comment") VALUES ('JMK', '000', 'Jenis Master Karcis', '');
+INSERT INTO rs00001(tt, tc, tdesc, "comment") VALUES ('JMK', '001', 'Karcis Poliklinik Umum', '');
+INSERT INTO rs00001(tt, tc, tdesc, "comment") VALUES ('JMK', '002', 'Karcis Poliklinik Spesialis', '');
+INSERT INTO rs00001(tt, tc, tdesc, "comment") VALUES ('JMK', '003', 'Karcis IGD', '');
+

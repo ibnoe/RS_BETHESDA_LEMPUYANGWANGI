@@ -1,0 +1,141 @@
+<?
+require_once("lib/visit_setting.php");
+$sql = 	"select a.*,to_char(a.tanggal_reg,'DD MON YYYY HH24:MI:SS')as tanggal_reg,f.layanan ".
+						"from c_visit_ri a ". 
+						"left join rsv0002 c on a.no_reg=c.id ".
+						"left join rs00006 d on d.id = a.no_reg ".
+						"left join rs00008 e on e.no_reg = a.no_reg ".
+						"left join rs00034 f on 'f.id' = e.item_id ".
+						"where a.no_reg='{$_GET['rg']}' and a.id_ri= '{$_GET["polinya"]}' and a.oid= '{$_GET["oid"]}' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>DATA PASIEN</div>";
+			echo "</td></tr>";
+    		echo "<tr><td valign=top>";
+    		$f = new ReadOnlyForm();
+			$f->text($visit_ri_catatan_bayi["vis_1"],$d[4]."&nbsp;Tahun");
+			$f->text($visit_ri_catatan_bayi["vis_2"],$d[5]);
+			$f->text($visit_ri_catatan_bayi["vis_3"],$d[6]);
+			$f->text($visit_ri_catatan_bayi["vis_4"],$d[7] );	
+			$f->text($visit_ri_catatan_bayi["vis_5"],$d[8]."&nbsp;Orang");
+			$f->text($visit_ri_catatan_bayi["vis_6"],$d[9]);
+			$f->text($visit_ri_catatan_bayi["vis_7"],$d[10]);
+			$f->text($visit_ri_catatan_bayi["vis_8"],$d[11] );    
+			$f->text($visit_ri_catatan_bayi["vis_9"],$d[12]);
+			$f->text($visit_ri_catatan_bayi["vis_10"],$d[13]);
+			$f->text($visit_ri_catatan_bayi["vis_11"],$d[14]);
+			$f->text($visit_ri_catatan_bayi["vis_12"],$d[15] );	
+			$f->text($visit_ri_catatan_bayi["vis_13"],$d[16] );
+			$f->title1("<U>GOLONGN DARAH</U>","LEFT");
+			$f->text($visit_ri_catatan_bayi["vis_14"],$d[17]);
+			$f->text($visit_ri_catatan_bayi["vis_15"],$d[18]);
+			$f->text($visit_ri_catatan_bayi["vis_16"],$d[19]);
+			$f->text($visit_ri_catatan_bayi["vis_17"],$d[20] );	
+			$f->text($visit_ri_catatan_bayi["vis_18"],$d[21] );
+			$f->text($visit_ri_catatan_bayi["vis_19"],$d[22]);
+			$f->title1("<U>PENGOBATAN IBU YANG DAPAT MEMPENGARUHI BAYI</U>");
+			$f->text($visit_ri_catatan_bayi["vis_20"],$d[23]);
+			$f->text($visit_ri_catatan_bayi["vis_21"],$d[24]);
+			$f->text($visit_ri_catatan_bayi["vis_22"],$d[25] );	
+			$f->title1("<U>ANESTESI / ANALGESI</U>");
+			$f->text($visit_ri_catatan_bayi["vis_23"],$d[26]."&nbsp;mm Hg" );
+			$f->text($visit_ri_catatan_bayi["vis_24"],$d[27]."&nbsp;/ Menit");
+			$f->text($visit_ri_catatan_bayi["vis_25"],$d[28]);
+			$f->title1("<U>BAYI</U>");
+			$f->text($visit_ri_catatan_bayi["vis_26"],$d[29]);
+			$f->text($visit_ri_catatan_bayi["vis_27"],$d[30] );	
+			$f->text($visit_ri_catatan_bayi["vis_28"],$d[31] );
+			$f->text($visit_ri_catatan_bayi["vis_29"],$d[32]);
+			$f->title1("<U>PENILAIAN BAYI DENGAN APGAR SCORE 60 DETIK, SETELAH LAHIR LENGKAP</U>");
+			if ($d["vis_30"] == "CHECKED"){
+			$f->checkbox3("Frekuensi Jantung","Tidak ada",$d["vis_30"],"[0]",$ext);
+			}elseif($d["vis_31"] == "CHECKED"){
+			$f->checkbox3("Frekuensi Jantung","100",$d["vis_31"],"[1]",$ext);	
+			}elseif($d["vis_32"] == "CHECKED"){
+			$f->checkbox3("Frekuensi Jantung","100",$d["vis_32"],"[2]",$ext);	
+			}
+			$f->text($visit_ri_catatan_bayi["vis_33"],$d["vis_33"],$ext);
+			if ($d["vis_34"] == "CHECKED"){
+			$f->checkbox3("Usaha Nafas","Tidak ada",$d["vis_34"],"[0]",$ext);
+			}elseif($d["vis_35"] == "CHECKED"){
+			$f->checkbox3("Usaha Nafas","Lambat dan tidak teratur",$d["vis_35"],"[1]",$ext);	
+			}elseif($d["vis_36"] == "CHECKED"){
+			$f->checkbox3("Usaha Nafas","Mengangis kuat",$d["vis_36"],"[2]",$ext);	
+			}
+			$f->text($visit_ri_catatan_bayi["vis_37"],$d["vis_37"],$ext);
+			if ($d["vis_38"] == "CHECKED"){
+			$f->checkbox3("Tonus Otot","Lumpuh",$d["vis_38"],"[0]",$ext);
+			}elseif($d["vis_39"] == "CHECKED"){
+			$f->checkbox3("Tonus Otot","Ext, flexi sedikit",$d["vis_39"],"[1]",$ext);	
+			}
+			$f->execute();
+			echo "</td><td valign=top>";
+    		$f = new ReadOnlyForm();
+			
+			if($d["vis_40"] == "CHECKED"){
+			$f->checkbox3("Tonus Otot","Gerakan Aktif",$d["vis_40"],"[2]",$ext);	
+			}
+			$f->text($visit_ri_catatan_bayi["vis_41"],$d["vis_41"],$ext);
+			if ($d["vis_42"] == "CHECKED"){
+			$f->checkbox3("Reflex","Tidak terjawab",$d["vis_42"],"[0]",$ext);
+			}elseif($d["vis_43"] == "CHECKED"){
+			$f->checkbox3("Reflex","Gerakan sedikit",$d["vis_43"],"[1]",$ext);	
+			}elseif($d["vis_44"] == "CHECKED"){
+			$f->checkbox3("Reflex","Menangis",$d["vis_44"],"[2]",$ext);	
+			}
+			$f->text($visit_ri_catatan_bayi["vis_45"],$d["vis_45"],$ext);
+			if ($d["vis_46"] == "CHECKED"){
+			$f->checkbox3("Waktu","Biru / Pucat",$d["vis_46"],"[0]",$ext);
+			}elseif($d["vis_47"] == "CHECKED"){
+			$f->checkbox3("Waktu","Tubuh kemerahan, tangan dan kaki biru",$d["vis_47"],"[1]",$ext);	
+			}elseif($d["vis_48"] == "CHECKED"){
+			$f->checkbox3("Waktu","Kemerahan",$d["vis_48"],"[2]",$ext);	
+			}
+			$f->text($visit_ri_catatan_bayi["vis_49"],$d["vis_49"],$ext);	
+			$f->title1("<U>RESUITASI</U>","LEFT");
+			$f->text($visit_ri_catatan_bayi["vis_50"],$d[53]."&nbsp;Menit");
+			$f->text($visit_ri_catatan_bayi["vis_51"],$d[54]."&nbsp;Menit");
+			$f->text($visit_ri_catatan_bayi["vis_52"],$d[55]."&nbsp;Menit");
+			$f->text($visit_ri_catatan_bayi["vis_53"],$d[56]."&nbsp;Menit" );
+			$f->title1("<U>KISAH RESUITASI</U>","LEFT");	
+			$f->text($visit_ri_catatan_bayi["vis_54"],$d[57]."&nbsp;Menit");
+			$f->text($visit_ri_catatan_bayi["vis_55"],$d[58]."&nbsp;Menit");
+			$f->text($visit_ri_catatan_bayi["vis_56"],$d[59]."&nbsp;Menit");
+			$f->text($visit_ri_catatan_bayi["vis_57"],$d[60]);
+			$f->title1("<U>PEMERIKSAAN BAYI SETELAH LAHIR</U>","LEFT");
+			$f->text($visit_ri_catatan_bayi["vis_58"],$d[61] );	
+			$f->text($visit_ri_catatan_bayi["vis_59"],$d[62] );
+			$f->text($visit_ri_catatan_bayi["vis_60"],$d[63]);
+			$f->text($visit_ri_catatan_bayi["vis_61"],$d[64]);
+			$f->text($visit_ri_catatan_bayi["vis_62"],$d[65]);
+			$f->text($visit_ri_catatan_bayi["vis_63"],$d[66] );	
+			$f->text($visit_ri_catatan_bayi["vis_64"],$d[67] );
+			$f->text($visit_ri_catatan_bayi["vis_65"],$d[68]);
+			$f->text($visit_ri_catatan_bayi["vis_66"],$d[69]);
+			$f->text($visit_ri_catatan_bayi["vis_67"],$d[70]);
+			$f->text($visit_ri_catatan_bayi["vis_68"],$d[71] );	
+			$f->text($visit_ri_catatan_bayi["vis_69"],$d[72] );
+			$f->text($visit_ri_catatan_bayi["vis_70"],$d[73]);
+			$f->text($visit_ri_catatan_bayi["vis_71"],$d[74]);
+			$f->text($visit_ri_catatan_bayi["vis_72"],$d[75]);
+			$f->text($visit_ri_catatan_bayi["vis_73"],$d[76]);
+			$f->text($visit_ri_catatan_bayi["vis_74"],$d[77]."&nbsp;Cm");
+			$f->text($visit_ri_catatan_bayi["vis_75"],$d[78]."&nbsp;Cm");
+			$f->text($visit_ri_catatan_bayi["vis_76"],$d[79]."&nbsp;Cm");
+			$f->text($visit_ri_catatan_bayi["vis_77"],$d[80]."&nbsp;Cm");
+			$f->text($visit_ri_catatan_bayi["vis_78"],$d[81]."&nbsp;Cm");
+			$f->execute();
+    		echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+?>

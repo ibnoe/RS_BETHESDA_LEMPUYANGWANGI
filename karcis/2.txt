@@ -1,0 +1,18 @@
+-- Table: kasir_karcis
+
+DROP TABLE kasir_karcis;
+
+CREATE TABLE kasir_karcis
+(
+  id bigint NOT NULL,
+  nama character varying,
+  alamat character varying,
+  poli character varying,
+  tanggal_reg timestamp without time zone,
+  harga numeric,
+  CONSTRAINT kasir_karcis_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE kasir_karcis OWNER TO postgres;

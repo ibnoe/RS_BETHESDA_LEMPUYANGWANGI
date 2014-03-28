@@ -1,0 +1,66 @@
+<?php
+		/*
+		-- edited 120210
+		-- mengganti type data d.id menjadi integer
+		-- menghilangkan fungsi trim()
+		-- mengganti type data f.id menjadi integer
+		*/
+$sql = "select a.*,b.nama,h.nama as perawat,to_char(a.tanggal_reg,'dd Month yyyy')as tanggal_reg,f.layanan,g.tmp_lahir,to_char(g.tgl_lahir,'dd Month yyyy')as tgl_lahir 
+						from c_visit a 
+						left join rs00017 b on a.id_dokter = b.id 
+						left join rs00017 h on a.id_perawat = h.id
+						left join rsv0002 c on a.no_reg=c.id 
+						left join rs00006 d on d.id = a.no_reg
+						left join rs00008 e on e.no_reg = a.no_reg
+						--left join rs00034 f on f.id = trim(e.item_id,0)
+						left join rs00034 f on 'f.id' = e.item_id
+						left join rs00002 g on g.mr_no = '{$_GET["mr"]}'
+						where a.no_reg='{$_GET['rg']}' and a.id_poli ='".$setting_poli["anak"]."' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>PEMERIKSAAN PASIEN KLINIK SPESIALIS ANAK</div>";
+			echo "</td></tr>";
+    		echo "<tr><td valign=top>";
+			$f = new ReadOnlyForm();
+			$f->text("Tanggal Pemeriksaan","<b>".$d["tanggal_reg"]);
+			$f->title1("<U>RIWAYAT KELAHIRAN ANAK</U>","LEFT");
+			$f->text("Tanggal Lahir",$d["tgl_lahir"]);
+			//$f->text("Tanggal Lahir",$d["tgl_lahir"]);
+			//$f->text("Tempat Lahir",$d["tmp_lahir"]);
+			$f->text($visit_anak["vis_1"],$d[3]."&nbsp;Kg");
+			$f->text($visit_anak["vis_2"],$d[4]);
+			$f->text($visit_anak["vis_3"],$d[5]);
+			$f->text($visit_anak["vis_4"],$d[6]);
+			//$f->text($visit_anak["vis_5"],$d[7]."&nbsp;(Tanggal-Bulan-Tahun)");
+			$f->title1("<U>RIWAYAT PENYAKIT</U>","LEFT");
+			$f->text($visit_anak["vis_6"],$d[8]);
+			
+			$f->execute();
+			echo "</td><td valign=top>";
+			$f = new ReadOnlyForm();
+			//$f->text($visit_anak["vis_7"],$d[9]."&nbsp;(Tanggal-Bulan-Tahun)");
+			$f->text($visit_anak["vis_8"],$d[10]);
+			$f->text($visit_anak["vis_9"],$d[11]);
+			$f->text($visit_anak["vis_10"],$d[12]);
+			$f->text($visit_anak["vis_11"],$d[13]."&nbsp;Kg");
+			$f->text($visit_anak["vis_12"],$d[14]."&nbsp;Cm");
+			$f->text($visit_anak["vis_13"],$d[15]);
+			$f->text($visit_anak["vis_14"],$d[16]);
+			$f->title1("<U>DOKTER PEMERIKSA</U>","LEFT");
+			$f->text("Dokter",$d["nama"]);
+			$f->text("Perawat",$d["perawat"]);
+		    $f->execute();
+			echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+?>

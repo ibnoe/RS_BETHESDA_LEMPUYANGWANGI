@@ -1,0 +1,8 @@
+<graph caption='Data Jumlah Pasien Rawat Inap' xAxisName='Bangsal' yAxisName='Jumlah Pasien' decimalPrecision='0' formatNumberScale='0'>
+<set name='Ruang ICU' value='20' color='AFD8F8' />
+<set name='Ruang Rawat Inap Anak' value='60' color='F6BD0F' />
+<set name='Ruang Rawat Inap Bedah' value='20' color='8BBA00' />
+<set name='Ruang Rawat Inap Interne' value='50' color='FF8E46'/>
+<set name='Ruang Rawat Inap Kebidanan' value='50' color='008E8E'/>
+<set name='Ruang Rawat Inap Mata' value='10' color='D64646'/>
+</graph>

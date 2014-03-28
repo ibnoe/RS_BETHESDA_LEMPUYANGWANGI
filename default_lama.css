@@ -1,0 +1,328 @@
+BODY {
+    BACKGROUND:     #E6EEDE;
+    FONT-FAMILY:    verdana, tahoma, arial;
+    FONT-SIZE:      10px;
+    COLOR:          #666666
+}
+
+TD {
+    FONT-FAMILY:    verdana, tahoma, arial;
+    FONT-SIZE:      10px;
+    COLOR:          #2D405B
+}
+
+TD.PAGE_HEADER {
+    FONT-FAMILY:    verdana, tahoma, arial;
+    FONT-SIZE:      10px;
+    BACKGROUND:     #877743
+}
+
+A {
+    FONT-FAMILY:    verdana, tahoma, arial;
+    FONT-SIZE:      10px;
+    FONT-WEIGHT:    bold;
+ 
+    TEXT-DECORATION:none
+}
+
+.TITLE {
+    FONT-FAMILY:    arial black, arial, Times New Roman, verdana, tahoma;
+    FONT-SIZE:      24px;
+    COLOR:          #2D405B;
+    TEXT-ALIGN:     RIGHT
+
+}
+
+.TITLE1 {
+    FONT-FAMILY:    arial black, arial, Times New Roman, verdana, tahoma;
+    FONT-SIZE:      24px;
+    
+    TEXT-ALIGN:     RIGHT
+
+}
+
+.TITLE_POLI {
+    FONT-FAMILY:    arial black, arial, Times New Roman, verdana, tahoma;
+    FONT-SIZE:      18px;
+    COLOR:          #2D405B;
+    TEXT-ALIGN:     CENTER
+
+}
+
+.TBL_HEAD {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-WEIGHT:    bold;
+    FONT-SIZE:      11px;
+    BACKGROUND:     #E6EEDE;
+    COLOR:          #2D405B
+}
+.TBL_FRM_BODY {
+	background: 	#f7f7f7;
+	color:			#000000;
+	font-family:	arial, verdana, helvetica;
+	font-size:		11px;
+	padding-left:	4px;
+	padding-right:	4px;
+}
+
+.TBL_FRM_BODY_BOLD {
+	background: 	#DDDDDD;
+	color:			#444444;
+	font-family:	arial, verdana, helvetica;
+	font-size:		12px;
+	font-weight:	bold;
+}
+
+
+.TBL_HEAD_HREF {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-WEIGHT:    bold;
+    FONT-SIZE:      11px;
+    BACKGROUND:     #E6EEDE;
+    TEXT-DECORATION:none;
+    COLOR:          #2D405B
+}
+
+.TBL_BODY {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      11px;
+    BACKGROUND:     #FFFFFF;
+    COLOR:          #2D405B;
+    PADDING-LEFT:   8px;
+    PADDING-RIGHT:  8px
+}
+
+.TBL_BORDER {
+    BACKGROUND:     #2D405B
+}
+
+ 
+.TBL_HREF A:link 
+{text-decoration: none;font-family:verdana;font-size:8pt;font-weight: bold;color: #fff}
+.TBL_HREF A:visited 
+{text-decoration: none;font-family:verdana;font-size:8pt;font-weight: bold;color: #fff}
+.TBL_HREF A:hover
+{text-decoration: none;font-family:verdana;font-size:8pt;font-weight: bold;color:#2D405B; border-bottom: 1px solid #fff; }
+
+
+.TBL_HREF_DISABLED {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      11px;
+    BACKGROUND:     #ffffff;
+    COLOR:          #aaaaaa
+}
+
+.BESAR {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-WEIGHT:    bold;
+    FONT-SIZE:      16px;
+
+    COLOR:          #2D405B
+}
+
+.SUB_MENU {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      12px;
+    COLOR:          #2D405B;
+    FONT-WEIGHT:    bold;
+    TEXT-ALIGN:     right;
+    TEXT-DECORATION:none
+}
+
+.SUB_MENU1 {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      11px;
+    COLOR:          #0000FF;
+    FONT-WEIGHT:    bold;
+    TEXT-ALIGN:     right;
+    TEXT-DECORATION:none
+}
+
+.SUB_MENU:HOVER {
+    TEXT-DECORATION:underline
+}
+
+.SUB_MENU1:HOVER {
+    TEXT-DECORATION:underline
+}
+
+.SUB_MENU_DISABLED {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      11px;
+    COLOR:          #888888;
+    FONT-WEIGHT:    bold;
+    TEXT-ALIGN:     right;
+    TEXT-DECORATION:none
+}
+
+.PAGE_TITLE {
+	FONT-FAMILY:    arial black, arial, Times New Roman, verdana, tahoma;
+    FONT-SIZE:      18px;
+    
+    TEXT-ALIGN:     LEFT
+	
+}
+.FORM_TITLE {
+    FONT-FAMILY:    arial, tahoma, verdana;
+    FONT-SIZE:      18px;
+    COLOR:          #2D405B;
+    FONT-WEIGHT:    bold
+}
+.FORM_TITLE1 {
+    FONT-FAMILY:    arial, tahoma, verdana;
+    FONT-SIZE:      12px;
+    COLOR:          #2D405B;
+    FONT-WEIGHT:    bold
+}
+
+.FORM_SUBTITLE {
+    FONT-FAMILY:    arial, tahoma, verdana;
+    FONT-SIZE:      12px;
+    COLOR:          #2D405B;
+    FONT-WEIGHT:    bold;
+    PADDING:        3px;
+    BACKGROUND:     #E6EEDE
+}
+.FORM_SUBTITLE1 {
+    FONT-FAMILY:    arial, tahoma, verdana;
+    FONT-SIZE:      12px;
+    COLOR:          #2D405B;
+    FONT-WEIGHT:    bold;
+    PADDING:        3px;
+    
+}
+
+.SUBTITLE {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      12px;
+    COLOR:          #2D405B;
+    FONT-WEIGHT:    bold;
+    PADDING:        3px;
+    BACKGROUND:     #E6EEDE
+}
+.SUBTITLE2 {
+    FONT-FAMILY:    arial, tahoma, verdana;
+    FONT-SIZE:      16px;
+    COLOR:          #2D405B;
+    FONT-WEIGHT:    bold;
+    PADDING:        3px;
+    BACKGROUND:     #E6EEDE
+}
+
+DIV.TITLE {
+    FONT-FAMILY:    arial, tahoma, verdana;
+    FONT-SIZE:      18px;
+    COLOR:          #2D405B;
+    FONT-WEIGHT:    bold
+}
+
+.FORM {
+    FONT-FAMILY:    verdana, arial, tahoma;
+    FONT-SIZE:      11px;
+    COLOR:          #2D405B
+}
+
+INPUT {
+    COLOR:          #2D405B;
+}
+
+SELECT {
+    COLOR:          #2D405B;
+}
+
+.ERROR {
+    PADDING:        8px;
+    BORDER:         DASHED 1px #dddddd;
+    BACKGROUND:     #ffffff;
+    COLOR:          #ff0000
+}
+
+.INFO {
+    PADDING:        8px;
+    BORDER:         DASHED 1px #dddddd;
+    BACKGROUND:     #ffffff;
+    COLOR:          #000000
+}
+
+.BOX {
+    PADDING:        8px;
+    BORDER:         DASHED 1px #888888;
+    BACKGROUND:     #ffffff 
+}
+
+H2 {
+    BACKGROUND:     #FFFFFF;
+    COLOR:          #2D405B;
+    PADDING:        4px
+}
+
+
+
+.TBL_FOOT {
+    FONT-FAMILY:    arial, tahoma, verdana;
+    FONT-WEIGHT:    bold;
+    FONT-SIZE:      12px;
+    BACKGROUND:     #E6EEDE;
+    COLOR:          #0061C8
+}
+
+.SCR_HEAD {
+    FONT-FAMILY:    arial, tahoma, verdana;
+    FONT-WEIGHT:    bold;
+    FONT-SIZE:      12px;
+    BACKGROUND:     #0061C8;
+    COLOR:          #FFFFFF
+}
+
+.SCR_BODY {
+    FONT-FAMILY:    arial, tahoma, verdana;
+    FONT-SIZE:      12px;
+    BACKGROUND:     #EEEEEE;
+    COLOR:          #EEEEEE
+}
+
+.SCR_BORDER {
+    BACKGROUND:     #0050A5
+}
+
+.TBL_BODY2 {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      11px;
+    PADDING-LEFT:   8px;
+    PADDING-RIGHT:  8px;
+    BORDER-BOTTOM:  solid 1px #2D405B ;
+}
+
+.TBL_BODY3 {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      11px;
+    PADDING-LEFT:   8px;
+    PADDING-RIGHT:  8px
+}
+
+.TBL_HEAD2 {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      12px;
+    PADDING-LEFT:   8px;
+    PADDING-RIGHT:  8px;
+    FONT-WEIGHT:    bold;
+    
+    BORDER-TOP:     solid 1px #F5FFE8;
+    BORDER-BOTTOM:  solid 1px #F5FFE8;
+    COLOR:          #000000;
+    BACKGROUND:     #EEEEEE
+}
+
+.TBL_HEAD3 {
+    FONT-FAMILY:    tahoma, verdana;
+    FONT-SIZE:      12px;
+    PADDING-LEFT:   8px;
+    PADDING-RIGHT:  8px;
+    FONT-WEIGHT:    bold;
+    BORDER-TOP:     dashed 2px #F5FFE8;
+    BORDER-BOTTOM:  solid 2px #000;
+
+    COLOR:          #000000;
+    BACKGROUND:     #EEEEEE
+}
+

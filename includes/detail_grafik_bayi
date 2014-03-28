@@ -1,0 +1,59 @@
+<?
+require_once("lib/visit_setting.php");
+$sql = 	"select a.*,to_char(a.tanggal_reg,'DD MON YYYY HH24:MI:SS')as tanggal_reg,f.layanan,g.nama ".
+        "from c_visit_ri a ". 
+        "left join rsv0002 c on a.no_reg=c.id ".
+        "left join rs00006 d on d.id = a.no_reg ".
+        "left join rs00008 e on e.no_reg = a.no_reg ".
+        "left join rs00034 f on f.id::text = e.item_id ".
+        "left join rs00017 g on g.id::text = a.vis_1::text ".
+        "where a.no_reg='{$_GET['rg']}' and a.id_ri= '{$_GET["polinya"]}' and a.oid= '{$_GET["oid"]}' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>DATA KEADAAN BAYI</div>";
+			echo "</td></tr>";
+    		echo "<tr><td  valign=top>";
+    		$f = new ReadOnlyForm();
+	
+			$f->text($visit_ri_grafik_bayi["vis_1"],$d["nama"]);
+			$f->text($visit_ri_grafik_bayi["vis_2"],$d[5]);
+			$f->text($visit_ri_grafik_bayi["vis_3"],$d[6]);
+			$f->text($visit_ri_grafik_bayi["vis_4"],$d[7]."&nbsp;Kg" );
+			$f->text($visit_ri_grafik_bayi["vis_5"],$d[8]."&nbsp;&deg;C");
+			$f->text($visit_ri_grafik_bayi["vis_6"],$d[9]);
+			$f->text($visit_ri_grafik_bayi["vis_7"],$d[10]);
+			$f->text($visit_ri_grafik_bayi["vis_8"],$d[11]);
+			$f->text($visit_ri_grafik_bayi["vis_9"],$d[12]);
+			$f->text($visit_ri_grafik_bayi["vis_10"],$d[13]);
+			$f->text($visit_ri_grafik_bayi["vis_11"],$d[14]);
+			$f->title1("<U>CATATAN (OBAT-OBATAN)</U>");
+			if($d["vis_12"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_bayi["vis_12"],$d[15]);
+			}else{}
+			if($d["vis_13"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_bayi["vis_13"],$d[16]);
+			}else{}
+			if($d["vis_14"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_bayi["vis_14"],$d[17]);
+			}else{}
+			if($d["vis_15"] != ''){
+			$f->text("&nbsp;&nbsp;".$visit_ri_grafik_bayi["vis_15"],$d[18]);
+			}else{}
+		
+			$f->text($visit_ri_grafik_bayi["vis_16"],$d[19]);
+			$f->execute();	
+    		echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+
+?>

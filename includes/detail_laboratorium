@@ -1,0 +1,52 @@
+<?php
+		/*
+		-- edited 120210
+		-- mengganti type data b.id menjadi integer
+		-- menghilangkan fungsi trim()
+		-- mengganti type data f.id menjadi integer
+		*/
+$sql = "select a.*,g.tdesc,b.nama,to_char(a.tanggal_reg,'dd Month yyyy')as tanggal_reg,f.layanan 
+						from c_visit a 
+						left join rs00017 b on a.id_dokter = b.id
+						left join rsv0002 c on a.no_reg=c.id 
+						left join rs00006 d on d.id = a.no_reg
+						left join rs00008 e on e.no_reg = a.no_reg
+						--left join rs00034 f on f.id = trim(e.item_id,0)
+						left join rs00034 f on 'f.id' = e.item_id
+						left join rs00001 g on g.tc_poli = a.id_poli and g.tt ='LYN'
+						where a.no_reg='{$_GET['rg']}' and a.id_poli ='".$setting_poli["laboratorium"]."' ";
+				$r = pg_query($con,$sql);
+				$n = pg_num_rows($r);
+			    if($n > 0) $d = pg_fetch_array($r);
+			    pg_free_result($r);
+				//echo $sql;exit;			
+			    $_GET['id'] = $_GET['rg'] ;	
+	 			
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>PEMERIKSAAN PASIEN KLINIK LABORATORIUM</div>";
+			echo "</td></tr>";
+    		echo "<tr><td valign=top>";
+			$f = new ReadOnlyForm();
+			
+			$f->text("Tanggal Pemeriksaan","<b>".$d["tanggal_reg"]);
+			$f->text("Waktu Pemeriksaan","<b>".$d["waktu"] );
+			$f->title1("<U>PEMERIKSAAN</U>","LEFT");
+			$f->text($visit_laboratorium["vis_1"],$d[3] );
+			$f->text($visit_laboratorium["vis_2"],$d[4]);
+			$f->text($visit_laboratorium["vis_3"],$d[5]);
+			//$f->text($visit_laboratorium["vis_4"],$d[6] );
+			//echo "</td><td valign=top>";
+			//$f->title1("<U>DIAGNOSA</U>","LEFT");	
+			//$f->text($visit_laboratorium["vis_5"],$d[7] );
+			//$f->text($visit_laboratorium["vis_6"],$d[8]);
+			//$f->title1("<U>DOKTER PEMERIKSA</U>","LEFT");
+			//$f->text("Nama",$d["nama"]);
+			$f->execute();
+			echo "</td></tr>";
+  			echo "<tr><td colspan='3'>";
+  			echo "<br>";
+  			include(rm_tindakan3);
+  			echo "</td><td>";
+  			echo "</td></tr></table>";
+?>

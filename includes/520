@@ -1,0 +1,404 @@
+<? // Nugraha, 17/02/2004
+   // Pur, 08/03/2004: new libs table
+   // sfdn, 22-04-2004
+   // sfdn, 23-04-2004
+   // sfdn, 01-05-2004
+   // sfdn, 01-06-2004
+   // sfdn, 24-12-2006	
+
+$PID = "lap_pend_total";
+$SC = $_SERVER["SCRIPT_NAME"];
+
+require_once("startup.php");
+
+// 24-12-2006
+    if ($_SESSION[uid] == "kasir2") {
+       $what = "RAWAT INAP";
+       $sqlayanan = "NOT LIKE '%IGD%'";	
+    } elseif ($_SESSION[uid] == "kasir1") {
+       $what = "RAWAT JALAN";
+       $sqlayanan = "NOT LIKE '%IGD%'";
+    } else {
+       $what = "IGD";
+       $sqlayanan = "LIKE '%IGD%'";
+    }
+// ---- end ----
+if($_GET["tc"] == "view") {
+    title("Rincian Retur Obat");
+
+    if ($_GET["e"] == "Y") {
+        $unit = "Rawat Jalan";
+    } elseif  ($_GET["e"] == "N"){
+        $unit = "IGD";
+    } elseif ($_GET["e"] == "I"){
+        $unit = "Rawat Inap";
+    } else {
+        $unit = "Semua";
+    }
+
+    $pasien = getFromTable(
+               "select tdesc from rs00001 ".
+               "where tc = '".$_GET["u"]."' and tt='JEP'");
+
+    $r = pg_query($con, "select tanggal(to_date(".$_GET["f"].",'YYYYMMDD'),3) as tgl");
+    $d = pg_fetch_object($r);
+    pg_free_result($r);
+
+    $bulan = $d->tgl;
+    $tgl_year = substr($_GET[f],0,4);
+    $tgl_mnth = substr($_GET[f],4,2);
+    $tgl_day = substr($_GET[f],6,2);
+    
+    $f = new Form("");
+    $f->subtitle("Tanggal    : $tgl_day-$tgl_mnth-$tgl_year");
+    $f->subtitle("U n i t    : $unit");
+    $f->subtitle("Tipe Pasien : $pasien");
+    $f->execute();
+
+    echo "<br>";
+    $t = new PgTable($con, "100%");
+    $r2 = pg_query($con,
+              "select sum(a.qty * a.harga) as jum ".
+              "from rs00008 a ".
+              "     left join rs00006 b ON a.no_reg = b.id ".
+              "where b.rawat_inap='".$_GET["e"]."' and ".
+              "     to_char(a.tanggal_trans,'YYYYMMDD') ='".$_GET["f"]. "' and ".
+              "     a.trans_type='RET' and b.tipe = '".$_GET["u"]."'");
+
+    $d2 = pg_fetch_object($r2);
+    pg_free_result($r2);
+
+    $t->SQL = "select c.mr_no,c.nama,a.no_reg, ".
+              "     e.obat, a.qty, a.harga, sum(a.qty * a.harga) as tagih ".
+              "from rs00008 a  ".
+              "     left join rs00006 b ON a.no_reg = b.id ".
+              "     left join rs00002 c ON b.mr_no = c.mr_no ".
+              "     left join rs00001 d ON (b.tipe = d.tc and d.tt = 'JEP') ".
+              "     left join rs00015 e ON to_number(a.item_id,'999999999999') = e.id ".
+              "where ".
+              " to_char(a.tanggal_trans,'YYYYMMDD') ='".$_GET["f"]. "' and ".
+              "     b.rawat_inap ='".$_GET["e"]."' and ".
+              "     a.trans_type = 'RET' ".
+              "group by c.mr_no, c.nama, a.no_reg, e.obat, a.qty, a.harga";
+
+    $t->setlocale("id_ID");
+    $t->ShowRowNumber = true;
+    $t->ColAlign[2] = "CENTER";
+    $t->RowsPerPage = 30;
+    $t->ColFormatMoney[4] = "%!+#2n";
+    $t->ColFormatMoney[5] = "%!+#2n";
+    $t->ColFormatMoney[6] = "%!+#2n";
+    $t->ColHeader = array("MR.NO","NAMA","NO.REG","NAMA O B A T","QTY","HARGA","Rp.");
+    $t->ColFooter[6] =  number_format($d2->jum,2);
+    //$t->ShowSQLExecTime = true;
+    //$t->ShowSQL = true;
+
+    $t->execute();
+
+} else {
+    //------------------------------------------------------- mulai
+    if (!$GLOBALS['print']){
+    	title("<img src='icon/keuangan-2.gif' align='absmiddle' > Laporan Pendapatan Total");
+		
+    } else {
+    	title("<img src='icon/keuangan.gif' align='absmiddle' > Laporan Pendapatan Total");
+		title_excel("lap_pend_total2"); 
+    }
+    //title("LAPORAN PENDAPATAN TOTAL");
+    $f = new Form($SC, "GET", "NAME=Form1");
+    $f->PgConn = $con;
+    $f->hidden("p", $PID);
+
+	include("tanggalan");
+   if (!empty($_GET[mPASIEN])) {
+    	$add = " c.tipe = '".$_GET[mPASIEN]."'";
+   	} else {
+      	$add = " c.tipe != '".$_GET[mPASIEN]."'";
+   	}
+   
+    echo "<br>";
+
+
+	//benerin kondisi supaya hasil ga dikali jumlah pasien (28102010 najla)
+	//pendapatan per poli najl 2011 1 11
+	$sql  = "select a.tdesc as layanan, sum(b.jumlah) as jml_duit, c.tipe
+			 from rs00006 c
+			 left join rs00001 a on c.poli = a.tc_poli and (c.tanggal_reg between '$ts_check_in1' and '$ts_check_in2') 
+			 left join rs00005 b on c.id = b.reg where b.kasir not in ('ASK','POT','IGD','BYD','BYI') and b.is_obat != 'Y'  and b.is_bayar ='Y'
+			 and $add and a.tt = 'LYN' 
+			 group by a.tdesc,c.tipe order by a.tdesc asc ";
+	
+	//pendapatan obat total najla 11 1 2011
+    $sql_satu = getFromTable("select sum(a.jumlah) as jumlah, c.tipe from rs00005 a ".
+							 "left join rs00006 c on a.reg = c.id ".
+							 "where a.kasir = 'RJL' and a.is_obat = 'Y' and $add ".
+							 "and (a.tgl_entry between '$ts_check_in1' and '$ts_check_in2') ".
+							 "group by c.tipe");
+    
+    
+   //pendapatan rawat jalan total najla 11 1 2011 
+    $sql_dua = getFromTable("select sum(b.jumlah) as jml_duit, c.tipe
+			 from rs00006 c
+			 left join rs00001 a on c.poli = a.tc_poli and (c.tanggal_reg between '$ts_check_in1' and '$ts_check_in2') 
+			 left join rs00005 b on c.id = b.reg where b.kasir not in ('ASK','POT','BYD','BYI') and b.is_obat != 'Y'  and b.is_bayar ='Y'
+			   and $add and a.tt = 'LYN' 
+			 group by a.tdesc,c.tipe order by a.tdesc asc");
+   
+			 
+	//pendapatan jalan non-obat per poli
+	$sql_obat  = "select a.tdesc as layanan, sum(b.jumlah) as jml_duit, c.tipe
+			 from rs00006 c
+			 left join rs00001 a on c.poli = a.tc_poli and (c.tanggal_reg between '$ts_check_in1' and '$ts_check_in2') 
+			 left join rs00005 b on c.id = b.reg where b.kasir not in ('ASK','POT','IGD','BYD','BYI') and b.is_obat = 'Y'  
+			 and $add and a.tt = 'LYN' 
+			 group by a.tdesc,c.tipe order by a.tdesc asc ";
+    
+    $qsql = pg_query($con,$sql);
+	$qsql_obat = pg_query($con,$sql_obat);
+   
+	// end of 24-12-2006
+
+    $spasi1 = "<img src='images/spacer.gif' width='20' height='1'>";
+    $spasi2 = "<img src='images/spacer.gif' width='50' height='1'>";
+    $spasi3 = "";
+
+    echo "<table cellpadding=0 cellspacing=0 border=0>";
+    echo "<tr>";
+    echo "<td colspan=4><b>A. PENDAPATAN NON-OBAT</b></td>";
+    echo "</tr>";
+    echo "<tr>";
+    echo "<td colspan=4>".$spasi1."<b>1. RAWAT JALAN</b></td>";
+    echo "</tr>";
+
+   $non_rj = 0;
+  // if (pg_fetch_object($qsql_obat)>0){
+    
+ $jumlah=getfromTable("select count (id) as jumlah from rs00005 where is_obat='Y' and kasir = 'RJL'");
+// echo $jumlah;
+ if ($jumlah>0){echo"masuk";
+ 	while ($dpoli = pg_fetch_object($qsql) and $dpoli_obat = pg_fetch_object($qsql_obat))
+	{
+		if ($temp=$dpoli->jml_duit - $dpoli_obat->jml_duit>0)
+		{
+			$temp=$dpoli->jml_duit - $dpoli_obat->jml_duit;
+		}
+		
+		else 
+		{
+			$temp=$dpoli->jml_duit;
+		}
+       
+	   
+	   	if ($dpoli->layanan == "INSTALASI GAWAT DARURAT")
+	   	{
+	   		$totale_igd = $dpoli->jml_duit - $dpoli_obat->jml_duit;
+		}
+		else
+		{
+			$non_rj = $non_rj + $temp;
+			if ($non_rj < 1)
+			{
+				$totale = 0;
+			}
+			else {
+				$totale = $non_rj;
+       		}
+	   
+       		echo "<tr>";
+       		echo "<td>$spasi2- $dpoli->layanan</td>";
+       		echo "<td>&nbsp;</td>";
+       		echo "<td align=right>&nbsp;:&nbsp;</td>";
+       		echo "<td align=right width=100>".number_format($temp ,2,",",".")."</td>";						
+      		echo "</tr>";
+       }
+    }
+}
+
+
+elseif ($jumlah==0){ //echo "sasasa";
+	while ($dpoli = pg_fetch_object($qsql) )
+	{
+		if ($temp=$dpoli->jml_duit >0)
+		{
+			$temp=$dpoli->jml_duit;
+		}
+		
+		else 
+		{
+			$temp=$dpoli->jml_duit;
+		}
+       
+	   
+	   	if ($dpoli->layanan == "INSTALASI GAWAT DARURAT")
+	   	{
+	   		$totale_igd = $dpoli->jml_duit ;
+		}
+		else
+		{
+			$non_rj = $non_rj + $temp;
+			if ($non_rj < 1)
+			{
+				$totale = 0;
+			}
+			else {
+				$totale = $non_rj;
+       		}
+	   
+       		echo "<tr>";
+       		echo "<td>$spasi2- $dpoli->layanan</td>";
+       		echo "<td>&nbsp;</td>";
+       		echo "<td align=right>&nbsp;:&nbsp;</td>";
+       		echo "<td align=right width=100>".number_format($temp ,2,",",".")."</td>";						
+      		echo "</tr>";
+       }
+    }
+}
+
+    pg_free_result($qsql);
+
+    echo "<tr>";
+    echo "<td></td>";
+    echo "<td>&nbsp;</td>";
+    echo "<td align=right>&nbsp;:&nbsp;</td>";
+    echo "<td align=right>$spasi3<b>".number_format($non_rj,2,",",".")."</b></td>";
+    echo "</tr>";
+	
+	
+	//pendapatan seluruh
+	$IGD=getFromTable("select sum(a.jumlah) as jumlah, c.tipe from rs00005 a ".
+					"left join rs00006 c on a.reg = c.id ".
+					"where a.kasir = 'BYD'  and $add ".
+					"and (a.tgl_entry between '$ts_check_in1' and '$ts_check_in2') ".
+					"group by c.tipe");
+	
+	//pendapatan igd non obat
+	 $nIGD = getFromTable("select sum(b.jumlah) as jml_duit, c.tipe
+			 from rs00006 c
+			 left join rs00001 a on c.poli = a.tc_poli and (c.tanggal_reg between '$ts_check_in1' and '$ts_check_in2') 
+			 left join rs00005 b on c.id = b.reg where b.kasir not in ('ASK','POT','BYR','BYI') and b.is_obat != 'Y'  and b.is_bayar ='Y'
+			 and $add and a.tt = 'LYN' 
+			 group by a.tdesc,c.tipe order by a.tdesc asc ");		
+			
+    //pendapatan igd obat
+    $d5 = getFromTable("select sum(a.jumlah) as jumlah, c.tipe from rs00005 a ".
+					"left join rs00006 c on a.reg = c.id ".
+					"where a.kasir = 'IGD' and a.is_obat = 'Y' and $add ".
+					"and (a.tgl_entry between '$ts_check_in1' and '$ts_check_in2') ".
+					"group by c.tipe");
+					
+	//hasil pendapatan igd non-obat najla 08012011
+	if($nIGD-$d5>0){
+	$nIGD=$nIGD-$d5;}		
+	 
+    echo "<tr>";
+    echo "<td>".$spasi1."<b>2. IGD</b></td>";
+    echo "<td>&nbsp;</td>";
+    echo "<td align=right>&nbsp;:&nbsp;</td>";
+    echo "<td align=right colspan=2><b>".number_format($nIGD,2,",",".")."</b></td>";
+    echo "</tr>";
+	
+	
+	//pendapatan RI seluruh
+	$RIN = getFromTable("select sum(a.jumlah) from rs00005 a left join rs00006 c ON a.reg = c.id
+					 where a.tgl_entry between '$ts_check_in1' and '$ts_check_in2' 
+					 and kasir NOT IN ('ASK','POT','BYR','BYD')  and $add and a.is_bayar ='Y'
+					 and c.rawat_inap = 'I' group by a.reg,c.rawat_inap order by reg ");
+					 
+	//pendapatan RI non obat
+	$sql_inap = getFromTable("select sum(a.jumlah) from rs00005 a left join rs00006 c ON a.reg = c.id
+					 where a.tgl_entry between '$ts_check_in1' and '$ts_check_in2' 
+					 and kasir NOT IN ('ASK','POT','BYR','BYD') and is_obat != 'Y' and $add and a.is_bayar ='Y'
+					 and c.rawat_inap = 'I' group by a.reg,c.rawat_inap order by reg ");
+					 
+    //pendapatan ri obat              
+    $nTagihan2 = getFromTable("select sum(a.jumlah) as jumlah from rs00005 a left join rs00006 c ON a.reg = c.id
+					 		  where a.tgl_entry between '$ts_check_in1' and '$ts_check_in2' 
+					 		  and kasir NOT IN ('ASK','POT') and is_obat = 'Y' and $add
+					 		  and c.rawat_inap = 'I' group by a.reg,c.rawat_inap order by reg "
+							);
+							
+	if($sql_inap-$nTagihan2>0){
+	$sql_inap=$sql_inap-$nTagihan2;}
+ 
+    echo "<tr>";
+    echo "<td>".$spasi1."<b>3. RAWAT INAP</b></td>";
+    echo "<td>&nbsp;</td>";
+    echo "<td align=right>&nbsp;:&nbsp;</td>";
+    echo "<td align=right colspan=2><b>".number_format($sql_inap,2,",",".")."</b></td>";
+    echo "</tr>";
+
+	// sfdn, 26-12-2006 --> jumlahnya diubah menjadi $non_rj+$nIGD+$nTagihan
+    $tot_nonobat = $nIGD+$sql_inap + ($non_rj);
+	// end of 26-12-2006
+
+    echo "<tr>";
+    echo "<td bgcolor=#f8f8f8></td>";
+    echo "<td bgcolor=#f8f8f8>&nbsp;</td>";
+    echo "<td align=right bgcolor=#f8f8f8>Sub total A&nbsp;:&nbsp;</td>";
+    echo "<td align=right bgcolor=#f8f8f8 colspan=2><font color=blue><b>".number_format($tot_nonobat,2,",",".")."</b></font></td>";
+    echo "</tr>";
+
+    echo "<tr>";
+    echo "<td colspan=4><br><br><b>B. PENDAPATAN OBAT</b></td>";
+    echo "</tr>";
+
+   //ngecek udah bayar ato belum najla 11 1 2011
+	if (($sql_dua-$sql_satu)<0){
+		$selisih=0;
+		$sql_satu=$selisih;}
+		
+    echo "<tr>";
+    echo "<td>".$spasi1."<b>1. RAWAT JALAN</b></td>";
+    echo "<td>&nbsp;</td>";
+    echo "<td align=right>&nbsp;:&nbsp;</td>";
+    echo "<td align=right colspan=2><b>".number_format($sql_satu,2,",",".")."</b></td>";
+    echo "</tr>";
+
+  
+    // end of 24-12-2006
+	
+	if (($IGD-$d5)<0){
+		$selisih=0;
+		$d5=$selisih;}
+		
+    echo "<tr>";
+    echo "<td>".$spasi1."<b>2. IGD</b></td>";
+    echo "<td>&nbsp;</td>";
+    echo "<td align=right>&nbsp;:&nbsp;</td>";
+    echo "<td align=right colspan=2><b>".number_format($d5,2,",",".")."</b></td>";
+    echo "</tr>";
+
+    
+ 
+	//ngecek obat udah dibayar belum
+	if (($sql_inap-$nTagihan2<0)){
+		$nTagihan2=0;
+	}
+    echo "<tr>";
+    echo "<td>".$spasi1."<b>3. RAWAT INAP</b></td>";
+    echo "<td>&nbsp;</td>";
+    echo "<td align=right>&nbsp;:&nbsp;</td>";
+    echo "<td align=right colspan=2><b>".number_format($nTagihan2,2,",",".")."</b></td>";
+    echo "</tr>";
+
+    $tot_obat = $sql_satu+$d5+$nTagihan2;
+    echo "<tr>";
+    echo "<td bgcolor=#f8f8f8></td>";
+    echo "<td bgcolor=#f8f8f8>&nbsp;</td>";
+    echo "<td align=right bgcolor=#f8f8f8>Sub total B&nbsp;:&nbsp;</td>";
+    echo "<td align=right bgcolor=#f8f8f8 colspan=2><font color=blue><b>".number_format($tot_obat,2,",",".")."</b></font></td>";
+    echo "</tr>";
+
+    echo "<tr><td>&nbsp;</td></tr>";
+    $total_pendapatan = $tot_obat+$tot_nonobat;
+    echo "<tr>";
+    echo "<td></td>";
+    echo "<td>&nbsp;</td>";
+    echo "<td align=right>Total A dan B&nbsp;:&nbsp;</td>";
+    echo "<td align=right colspan=2><font color=red><b>".number_format($total_pendapatan,2,",",".")."</b></font></td>";
+    echo "</tr>";
+    echo "</table>";
+
+}
+title_print("");
+?>

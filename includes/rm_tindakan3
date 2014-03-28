@@ -1,0 +1,102 @@
+<?
+//apep 08-08-2007
+//Agung S. 2011-10-18 Menambahkan group by
+//LTM
+//echo"<div class=box>";
+$reg = $_GET["id"];
+$f = new ReadOnlyForm();
+$temp = getFromTable("select item_id from rs00008 where no_reg = '$reg' and trans_type='LTM'");
+if ($temp != null){
+$f->title1("<U>LAYANAN / TINDAKAN MEDIS</U>");
+$f->execute();
+    
+$SQLTR = 
+		"select  to_char(f.tanggal_trans,'dd Mon yyyy')as tanggal,h.tdesc as jenis_jasa,a.layanan,g.nama, b.layanan ||' - ' || c.layanan as level2 
+		from rs00034 a 
+		join rs00008 f on to_number(f.item_id,'999999999999') = a.id and f.trans_type = 'LTM' 
+		left join rs00034 b on substr(b.hierarchy,4,12) = '000000000000'and substr(a.hierarchy,1,3)  = substr(b.hierarchy,1,3)and b.id <> a.id
+		left join rs00001 h on a.sumber_pendapatan_id = h.tc and h.tt = 'SBP' 
+		left join rs00034 c on substr(c.hierarchy,7,9)  = '000000000'and substr(a.hierarchy,1,6)  = substr(c.hierarchy,1,6)and c.id <> a.id  
+		left join rs00017 g on g.id=f.no_kwitansi 
+		where f.no_reg = '$reg'
+                group by f.tanggal_trans, h.tdesc, a.layanan,g.nama, b.layanan, c.layanan,f.trans_group
+		order by f.trans_group";
+		
+$t = new PgTable($con, "100%");
+$t->SQL = "$SQLTR";
+$t->setlocale("id_ID");
+$t->ShowRowNumber = true;
+$t->ColAlign = array("CENTER","LEFT","LEFT","LEFT");
+$t->ColHeader = array("TANGGAL","UNIT","NAMA LAYANAN/TINDAKAN MEDIS","PEMBERI TINDAKAN","GROUP LAYANAN");
+if(!$GLOBALS['print']){
+		$t->RowsPerPage = 30;
+    }else{
+    	$t->RowsPerPage = 30;
+    	$t->DisableNavButton = true;
+    	$t->DisableScrollBar = true;
+    	
+    }
+$t->execute();
+}else{}
+echo "<br>";
+//ICD
+$f = new ReadOnlyForm();
+$temp = getFromTable("select item_id from rs00008 where no_reg = '$reg' and trans_type='ICD'");
+if ($temp != null){
+$f->title1("<U>ICD</U>");
+$f->execute();
+$SQLTR1 = 
+		"select to_char(a.tanggal_entry,'dd Mon yyyy')as tanggal,a.item_id,b.description,b.category from rs00008 a 
+		left join rsv0005 b on b.diagnosis_code = a.item_id
+		where trans_type='ICD' and a.no_reg='$reg'
+		order by tanggal_entry";
+		
+$t = new PgTable($con, "100%");
+$t->SQL = "$SQLTR1";
+$t->setlocale("id_ID");
+$t->ShowRowNumber = true;
+$t->ColAlign = array("CENTER","CENTER","LEFT","LEFT");
+$t->ColHeader = array("TANGGAL","KODE","ICD","KATEGORI");
+if(!$GLOBALS['print']){
+		$t->RowsPerPage = 30;
+    }else{
+    	$t->RowsPerPage = 30;
+    	$t->DisableNavButton = true;
+    	$t->DisableScrollBar = true;
+    }
+$t->execute();
+}else{}
+//RESEP
+echo "<br>";
+$f = new ReadOnlyForm();
+$temp = getFromTable("select item_id from rs00008 where no_reg = '$reg' and trans_type='OBA'");
+if ($temp != null){
+$f->title1("<U>RESEP</U>");
+$f->execute();
+$SQLTR2 = 
+		"select obat, qty, tdesc as satuan, description as dosis 
+		from rs00015, rs00001, rs00008 
+		left join rs00009 on rs00008.id = rs00009.trans_id 
+		where to_number(rs00008.item_id,'999999999999') = rs00015.id 
+		and rs00008.trans_type = 'OBA'
+		and rs00015.satuan_id = rs00001.tc 
+		and rs00001.tt = 'SAT' and rs00008.no_reg= '$reg'";
+		
+$t = new PgTable($con, "70%");
+$t->SQL = "$SQLTR2";
+$t->setlocale("id_ID");
+$t->ShowRowNumber = true;
+$t->ColAlign = array("LEFT","RIGHT","CENTER","LEFT");
+$t->ColHeader = array("NAMA OBAT","QUANTITY","SATUAN","DOSIS");
+if(!$GLOBALS['print']){
+		$t->RowsPerPage = 30;
+    }else{
+    	$t->RowsPerPage = 30;
+    	$t->DisableNavButton = true;
+    	$t->DisableScrollBar = true;
+    }
+$t->execute();
+}else{}
+
+
+?>

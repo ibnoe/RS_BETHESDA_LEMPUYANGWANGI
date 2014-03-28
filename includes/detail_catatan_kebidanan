@@ -1,0 +1,120 @@
+<?
+require_once("lib/visit_setting.php");
+$sql = 	"select a.*,to_char(a.tanggal_reg,'DD MON YYYY HH24:MI:SS')as tanggal_reg,f.layanan,g.nama as merawat,h.nama as mengirim ".
+			"from c_visit_ri a ".
+			"left join rsv0002 c on a.no_reg=c.id ".
+			"left join rs00006 d on d.id = a.no_reg ".
+			"left join rs00008 e on e.no_reg = a.no_reg ".
+			"left join rs00034 f on f.id::text = e.item_id::text ".
+			"left join rs00017 g on a.vis_1::text = g.id::text ".
+			"left join rs00017 h on a.vis_2::text = h.id::text ".
+			"where a.no_reg='{$_GET['rg']}' and a.id_ri= '{$_GET["polinya"]}' and a.oid= '{$_GET["oid"]}' ";
+			$r = pg_query($con,$sql);
+			$n = pg_num_rows($r);
+			if($n > 0) $d = pg_fetch_array($r);
+			pg_free_result($r);
+			//echo $sql;exit;
+			$_GET['id'] = $_GET['rg'] ;
+
+			echo"<div class=box>";
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<div class=form_subtitle>DATA PASIEN</div>";
+			echo "</td></tr>";
+			echo "<tr><td valign=top>";
+			$f = new ReadOnlyForm();
+			$f->text("<B>".$visit_ri_catatan_kebidanan["vis_1"]."</B>",$d["merawat"]);
+			$f->text("<B>".$visit_ri_catatan_kebidanan["vis_2"]."</B>",$d["mengirim"] );
+			$f->text($visit_ri_catatan_kebidanan["vis_3"],$d[6]);
+			$f->text($visit_ri_catatan_kebidanan["vis_4"],$d[7] );
+			$f->text($visit_ri_catatan_kebidanan["vis_5"],$d[8]);
+			$f->text($visit_ri_catatan_kebidanan["vis_6"],$d[9]);
+			$f->title1("<U>ANAMNESA</U>","LEFT");
+			$f->text($visit_ri_catatan_kebidanan["vis_7"],$d[10]);
+			$f->text($visit_ri_catatan_kebidanan["vis_8"],$d[11] );
+			$f->text($visit_ri_catatan_kebidanan["vis_9"],$d[12]);
+			$f->text($visit_ri_catatan_kebidanan["vis_10"],$d[13]);
+			$f->text($visit_ri_catatan_kebidanan["vis_11"],$d[14]);
+			$f->text($visit_ri_catatan_kebidanan["vis_12"],$d[15]);
+			$f->text($visit_ri_catatan_kebidanan["vis_13"],$d[16] );
+			$f->text($visit_ri_catatan_kebidanan["vis_14"],$d[17]);
+			$f->text($visit_ri_catatan_kebidanan["vis_15"],$d[18]);
+			$f->text($visit_ri_catatan_kebidanan["vis_16"],$d[19]);
+			if($d["vis_17"]!= ''){
+			$f->title1("<U>RIWAYAT KEHAMILAN DAN PERSALINAN YANG LALU</U>","LEFT");
+			$max = count($visit_ri_catatan_kebidanan) ;
+			$i = 1;
+			while ($i<= $max) {
+				if 		($visit_ri_catatan_kebidanan["vis_".$i."F"] == "text1" && $d[3+$i] !='') {
+						$f->text($visit_ri_catatan_kebidanan["vis_".$i],$d[3+$i],$ext);
+				}
+				$i++ ;
+			}
+			}
+			$f->title1("<U>KEHAMILAN SEKARANG</U>","LEFT");
+			$f->text($visit_ri_catatan_kebidanan["vis_33"],$d[36] );
+			$f->text($visit_ri_catatan_kebidanan["vis_34"],$d[37]);
+			$f->text($visit_ri_catatan_kebidanan["vis_35"],$d[38]);
+			$f->text($visit_ri_catatan_kebidanan["vis_36"],$d[39]);
+			$f->title1("<U>STATUS PRAESENS</U>","LEFT");
+			$f->text($visit_ri_catatan_kebidanan["vis_37"],$d[40] );
+			$f->text($visit_ri_catatan_kebidanan["vis_38"],$d[41] );
+			$f->text($visit_ri_catatan_kebidanan["vis_39"],$d[42]);
+			$f->text($visit_ri_catatan_kebidanan["vis_40"],$d[43]);
+			$f->text($visit_ri_catatan_kebidanan["vis_41"],$d[44]);
+			$f->execute();
+			echo "</td><td valign=top>";
+			$f = new ReadOnlyForm();
+			
+			$f->text($visit_ri_catatan_kebidanan["vis_42"],$d[45] );
+			$f->text($visit_ri_catatan_kebidanan["vis_43"],$d[46] );
+			$f->text($visit_ri_catatan_kebidanan["vis_44"],$d[47]);
+			$f->text($visit_ri_catatan_kebidanan["vis_45"],$d[48] );
+			$f->text($visit_ri_catatan_kebidanan["vis_46"],$d[49] );
+			$f->title1("<U>STATUS OBSTETRIKUS</U>","LEFT");
+			$f->text($visit_ri_catatan_kebidanan["vis_47"],$d[50]);
+			$f->text($visit_ri_catatan_kebidanan["vis_48"],$d[51]);
+			$f->text($visit_ri_catatan_kebidanan["vis_49"],$d[52]);
+			$f->text($visit_ri_catatan_kebidanan["vis_50"],$d[53]."/Menit" );
+			$f->text($visit_ri_catatan_kebidanan["vis_51"],$d[54] );
+			$f->text($visit_ri_catatan_kebidanan["vis_52"],$d[55]);
+			$f->text($visit_ri_catatan_kebidanan["vis_53"],$d[56]);
+			$f->text($visit_ri_catatan_kebidanan["vis_54"],$d[57]);
+			$f->title1("<U>PEMERIKSAAN LABORATORIUM</U>","LEFT");
+			$f->text($visit_ri_catatan_kebidanan["vis_55"],$d[58]);
+			$f->text($visit_ri_catatan_kebidanan["vis_56"],$d[59]);
+			$f->text($visit_ri_catatan_kebidanan["vis_57"],$d[60]);
+			$f->text($visit_ri_catatan_kebidanan["vis_58"],$d[61]);
+			$f->text($visit_ri_catatan_kebidanan["vis_59"],$d[62]);
+			$f->text($visit_ri_catatan_kebidanan["vis_60"],$d[63]);
+			$f->text($visit_ri_catatan_kebidanan["vis_61"],$d[64]);
+			$f->text($visit_ri_catatan_kebidanan["vis_62"],$d[65]);
+			$f->text($visit_ri_catatan_kebidanan["vis_63"],$d[66]);
+			$f->text($visit_ri_catatan_kebidanan["vis_64"],$d[67]);
+			$f->text($visit_ri_catatan_kebidanan["vis_65"],$d[68]);
+			$f->execute();
+			echo "</td></tr>";
+			$f = new ReadOnlyForm();
+			echo "<table width='100%' border='0'><tr><td colspan='2'>";
+			echo"<hr noshade size='1'>";
+			echo"<div class=form_subtitle1><U>RIWAYAT PERSALINAN</U></div>";
+			echo "<br>";
+			$f->execute();
+
+			$SQLSTR = 	"select vis_1,vis_2,vis_3 from c_catatan where no_reg= '{$_GET["rg"]}' AND id_ri = '{$_GET["polinya"]}' ORDER BY VIS_2";
+
+			$t = new PgTable($con, "100%");
+			$t->SQL = "$SQLSTR $SQLWHERE ";
+			$t->setlocale("id_ID");
+			$t->ShowRowNumber = true;
+			$t->ColAlign = array("CENTER","CENTER","LEFT");
+			$t->RowsPerPage = $ROWS_PER_PAGE;
+			$t->ColHeader = array(" T A N G G A L ","J A M","K E T E R A N G A N");
+
+			$t->execute();
+			echo "</td></tr></table>";
+			echo "<tr><td colspan='3'>";
+			
+			include(rm_tindakan3);
+			echo "</td><td>";
+			echo "</td></tr></table>";
+?>

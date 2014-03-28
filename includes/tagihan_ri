@@ -1,0 +1,502 @@
+<?php
+if($_GET[p]=="335" or $_GET[p]=="cetak.rincian" or $_GET[p]=="tes_kasir"){
+    
+
+	$paket = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								where a.no_reg='".$_GET[rg]."' AND a.trans_type='LTM' AND a.referensi='P'
+								");
+	$paketPenjamin = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								where a.no_reg='".$_GET[rg]."' AND a.trans_type='LTM' AND a.referensi='P'
+								");
+	$tindakanBangsal = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND layanan NOT ILIKE '%jasa perawatan%' AND hierarchy NOT LIKE '004003%' AND hierarchy NOT LIKE '004004%'
+								 AND hierarchy NOT LIKE '004005%' AND layanan NOT ILIKE '%jasa perawatan%' AND layanan NOT ILIKE '%konsultasi%' AND layanan NOT ILIKE '%fisioterapi%' AND layanan NOT ILIKE '%usg%'
+								 AND layanan NOT ILIKE '%Paket Makan%' 
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP' 
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+	$tindakanBangsalPenjamin = getFromTable(" select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND layanan NOT ILIKE '%jasa perawatan%' AND hierarchy NOT LIKE '004003%' AND hierarchy NOT LIKE '004004%'
+								 AND hierarchy NOT LIKE '004005%' AND layanan NOT ILIKE '%jasa perawatan%' AND layanan NOT ILIKE '%konsultasi%' AND layanan NOT ILIKE '%fisioterapi%' AND layanan NOT ILIKE '%usg%'
+								 AND layanan NOT ILIKE '%ekg%' AND layanan NOT ILIKE '%Paket Makan%' 
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+/**
+	$tindakanMedis = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND layanan NOT ILIKE '%jasa perawatan%' AND hierarchy NOT LIKE '004003%' AND hierarchy NOT LIKE '004004%'
+								 AND hierarchy NOT LIKE '004005%' AND layanan NOT ILIKE '%jasa perawatan%' AND layanan NOT ILIKE '%konsultasi%' AND layanan NOT ILIKE '%fisioterapi%' AND layanan NOT ILIKE '%usg%'
+								 AND layanan NOT ILIKE '%ekg%' AND layanan NOT ILIKE '%Paket Makan%' AND layanan NOT ILIKE '%transfusi darah%' AND layanan NOT ILIKE '%transfortasi transfusi%'
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								JOIN rs00017 d ON a.no_kwitansi = d.id AND (d.nama ILIKE '%DR.%' OR d.nama ILIKE '%DRG.%')
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+	$tindakanMedisPenjamin = getFromTable(" select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND layanan NOT ILIKE '%jasa perawatan%' AND hierarchy NOT LIKE '004003%' AND hierarchy NOT LIKE '004004%'
+								 AND hierarchy NOT LIKE '004005%' AND layanan NOT ILIKE '%jasa perawatan%' AND layanan NOT ILIKE '%konsultasi%' AND layanan NOT ILIKE '%fisioterapi%' AND layanan NOT ILIKE '%usg%'
+								 AND layanan NOT ILIKE '%ekg%' AND layanan NOT ILIKE '%Paket Makan%' AND layanan NOT ILIKE '%transfusi darah%' AND layanan NOT ILIKE '%transfortasi transfusi%'
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								JOIN rs00017 d ON a.no_kwitansi = d.id AND (d.nama ILIKE '%DR.%' OR d.nama ILIKE '%DRG.%')
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+**/
+	$transfusi = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric 
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P' AND c.tdesc ILIKE '%transfusi%'
+								");
+	$transfusiPenjamin = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric 
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P' AND c.tdesc ILIKE '%transfusi%'
+								");
+/*
+	$konsultasi = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric AND layanan ILIKE '%konsul%' ".
+								//join rs00034 b on b.id=a.item_id::numeric AND layanan ILIKE '%konsultasi%' AND no_kwitansi = 0
+								" where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P'
+								");
+*/
+	$konsultasiPenjamin = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric AND layanan ILIKE '%konsul %'".
+								//join rs00034 b on b.id=a.item_id::numeric AND layanan ILIKE '%konsultasi%' AND no_kwitansi = 0
+								" where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P'
+								");
+
+	$konsultasiDokter = getFromTable("  select sum(a.tagihan) as jumlah 
+
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric AND (layanan ILIKE '%kontrol%' OR layanan ILIKE '%konsul%' OR layanan ILIKE '%kunjungan%') AND no_kwitansi <> 0
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P'
+								");
+	$konsultasiDokterPenjamin = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric AND (layanan ILIKE '%kontrol%' OR layanan ILIKE '%konsul%') AND no_kwitansi <> 0
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P'
+								");
+	
+	$askep = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric AND b.layanan ILIKE '%jasa perawatan%'
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+	$askepPenjamin = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric AND b.layanan ILIKE '%jasa perawatan%'
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+	$sewaKamarOperasi = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric 
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%SEWA KAMAR OPERASI%' AND a.referensi!='P'
+								");
+	$sewaKamarOperasiPenjamin = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric 
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%SEWA KAMAR OPERASI%' AND a.referensi!='P'
+								");
+	$anestesi = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND hierarchy LIKE '004004%'
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+	$anestesiPenjamin = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND hierarchy LIKE '004004%'
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+	$operasi = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND hierarchy LIKE '004003%'
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+	$operasiPenjamin = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND hierarchy LIKE '004003%'
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%' AND a.referensi!='P'
+								");
+	$visite   = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric 
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND c.tdesc ILIKE '%visite%' AND a.referensi!='P'
+								");
+	$visitePenjamin   = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric AND b.layanan ILIKE '%visite%'
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND c.tdesc ILIKE '%visite%' AND a.referensi!='P'
+								");
+	$layananDokter   = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN DOK%' AND a.referensi!='P'
+								");
+	$potongan = getFromTable("SELECT SUM(jumlah) FROM rs00005 WHERE kasir = 'POT' AND reg='".$_GET['rg']."'");
+
+
+	$layananDokterPenjamin   = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%PEMERIKSAAN DOK%' AND a.referensi!='P'
+								");
+
+	/*
+	$konsul   = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and (c.tdesc like '%KONSUL%' OR c.tdesc like '%KUNJUNG%')
+								");
+	*/
+	$konsulPenjamin  = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and (c.tdesc like '%KONSUL%' OR c.tdesc like '%KUNJUNG%')
+								");
+
+	$alat     = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%ALAT%' AND a.referensi!='P'
+								");
+
+	$alatPenjamin     = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%ALAT%' AND a.referensi!='P'
+								");
+
+	$laborat  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%LABO%' AND a.referensi!='P'
+								");
+	$laboratPenjamin  = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%LABO%' AND a.referensi!='P'
+								");
+	$radiologi= getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND b.layanan NOT ILIKE '%USG%' AND b.layanan NOT ILIKE '%FISIOTERAPI%'
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%RADIO%' AND a.referensi!='P'
+								");
+	$radiologiPenjamin= getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric AND b.layanan NOT ILIKE '%USG%' AND b.layanan NOT ILIKE '%FISIOTERAPI%'
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%RADIO%' AND a.referensi!='P'
+								");
+								
+	$usg	  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric and b.layanan like '%USG%'
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'   
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P'");
+	$usgPenjamin	  = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric and b.layanan like '%USG%'
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P'");
+	
+	$ekg	  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%EKG%' AND a.referensi!='P'");
+	$ekgPenjamin	  = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%EKG%' AND a.referensi!='P'");
+
+	$oksigen  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%OKSI%' AND a.referensi!='P'
+								");
+
+	$oksigenPenjamin  = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%OKSI%' AND a.referensi!='P'
+								");
+
+	/*
+	$fisio    = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric and b.layanan ILIKE '%fisioterapi%'
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P'");
+
+	$fisioPenjamin    = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric and b.layanan ILIKE '%fisioterapi%'
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') AND a.referensi!='P'");
+	*/
+	$fisio    = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%FISIO%'
+								");
+
+	$fisioPenjamin    = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%FISIO%'
+								");
+
+	$ambulan  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%AMBUL%'
+								");
+
+	$ambulanPenjamin  = getFromTable("  select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%AMBUL%'
+								");
+
+	$admin    = getFromTable(" select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' AND referensi != 'P'
+								");
+
+	$adminPenjamin    = getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%PENDAFTARAN%' AND referensi != 'P'
+								");
+	$PX = getFromTable("select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  AND c.tdesc ILIKE '%PX Dr. Ghazali%'
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM')");
+	$PXPenjamin = getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  AND c.tdesc ILIKE '%PX Dr. Ghazali%'
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM')");
+	$adminRI    = getFromTable("select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP' AND b.layanan ILIKE '%Administrasi%' 
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%ADMIN%' AND referensi != 'P'
+								");
+
+	$adminPenjaminRI    = getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP' AND b.layanan ILIKE '%Administrasi%' 
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%ADMIN%' AND a.referensi!='P'
+								");
+	
+	$jasaRujukan    = getFromTable("select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%JASA RUJUKAN%' AND referensi != 'P'
+								");
+
+	$jasaRujukanRI    = getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+								from rs00008 a
+								join rs00034 b on b.id=a.item_id::numeric
+								join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP' 
+								where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tdesc like '%JASA RUJUKAN%' AND a.referensi!='P'
+								");
+	$adminRI += $jasaRujukan;
+	$adminPenjaminRI += $jasaRujukanRI;
+        $obat = getFromTable("  select sum(tagihan) as jumlah 
+								from rs00008   
+								where no_reg='".$_GET[rg]."' AND (trans_type = 'OB1' OR trans_type = 'RCK')
+								");
+        $obatPenjamin = getFromTable("  select sum(dibayar_penjamin) as jumlah 
+								from rs00008   
+								where no_reg='".$_GET[rg]."' AND (trans_type = 'OB1' OR trans_type = 'RCK')
+								");
+					
+        $obatReturn = getFromTable("  select sum(tagihan) as jumlah
+								from rs00008_return   
+								where no_reg='".$_GET[rg]."' AND (trans_type = 'OB1' OR trans_type = 'RCK' OR trans_type = 'BHP')
+								");
+        $obatPenjaminReturn = getFromTable(" select sum(dibayar_penjamin) as jumlah
+								from rs00008_return   
+								where no_reg='".$_GET[rg]."' AND (trans_type = 'OB1' OR trans_type = 'RCK' OR trans_type = 'BHP')
+								");
+	$bhp = getFromTable("select sum(tagihan) as jumlah ".
+						 "from rs00008 where no_reg='".$_GET[rg]."' AND trans_type = 'BHP' ");
+					
+	$bhpPenjamin = getFromTable("select sum(dibayar_penjamin) as jumlah ".
+						 "from rs00008 where no_reg='".$_GET[rg]."' AND trans_type = 'BHP' ");
+					
+	$akomodasi = getFromTable("select sum(tagihan) as jumlah " .
+						    "from rs00008 where no_reg='" . $_GET[rg] . "' AND trans_type = 'POS' AND trans_form = '370' AND qty > 0  ");
+					 
+
+	$akomodasiPenjamin = getFromTable("select sum(dibayar_penjamin) as jumlah " .
+						    "from rs00008 where no_reg='" . $_GET[rg] . "' AND trans_type = 'POS' AND trans_form = '370' AND qty > 0 ");
+
+	$akomodasiMakan = getFromTable("select SUM(tagihan)  from rs00008 a
+									join rs00034 b on b.id=a.item_id::numeric 
+									join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+									where a.no_reg='".$_GET['rg']."' AND (a.trans_type='LTM') AND b.layanan ILIKE '%Paket Makan%'");
+									
+	$akomodasiMakanPenjamin = getFromTable("select SUM(a.dibayar_penjamin)  from rs00008 a
+									join rs00034 b on b.id=a.item_id::numeric 
+									join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+									where a.no_reg='".$_GET['rg']."' AND (a.trans_type='LTM') AND b.layanan ILIKE '%Paket Makan%'");
+
+
+	$lain  = getFromTable("select sum(a.tagihan) as jumlah 
+					from rs00008 a
+					left join rs00034 b on b.id=a.item_id::numeric
+					left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+					where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tc = '012'
+					");
+
+	$lainPenjamin  = getFromTable("select sum(a.dibayar_penjamin) as jumlah 
+					from rs00008 a
+					left join rs00034 b on b.id=a.item_id::numeric
+					left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+					where a.no_reg='".$_GET[rg]."' AND (a.trans_type='LTM') and c.tc = '012'
+					");
+
+
+	//$total = $PX+$ekg+$konsultasi+$paket+$sewaKamarOperasi+$anestesi+$operasi+$adminRI+$askep+$admin+$konsultasiDokter+$transfusi+
+	$total = $PX+$ekg+$paket+$sewaKamarOperasi+$anestesi+$operasi+$adminRI+$askep+$admin+$konsultasiDokter+$transfusi+
+		 +$tindakanMedis+ $tindakanBangsal + $visite + $layananDokter + $konsul + $alat + $bhp + $obat + $laborat + $radiologi + $usg + 
+		  $oksigen + $fisio + $ambulan + $akomodasi + $lain + $akomodasiMakan;
+	$totalPenjamin = $PXPenjamin+$ekgPenjamin+$konsultasiPenjamin+$paketPenjamin+$sewaKamarOperasiPenjamin+$anestesiPenjamin+$operasiPenjamin+$adminPenjaminRI+$askepPenjamin+$adminPenjamin + $konsultasiDokterPenjamin+
+			  $transfusiPenjamin+ $tindakanBangsalPenjamin + $tindakanMedisPenjamin + $visitePenjamin + $layananDokterPenjamin + $konsulPenjamin + $alatPenjamin + $bhpPenjamin + $obatPenjamin + $laboratPenjamin + $radiologiPenjamin + $usgPenjamin +
+			 $oksigenPenjamin + $fisioPenjamin + $ambulanPenjamin + $akomodasiPenjamin + $lainPenjamin + $akomodasiMakanPenjamin;
+
+}elseif($_GET[p]=="lap_pend_rj"){
+    $tindakan = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%TINDAK%'
+								");
+	$visite   = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%VISIT%'
+								");
+	$konsul   = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%KONSUL%'
+								");
+	$alat     = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%ALAT%'
+								");
+	$laborat  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%LABO%'
+								");
+	$radiologi= getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%RADIO%'
+								");
+	$usg	  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%USG%'
+								");
+	$oksigen  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%OKSI%'
+								");
+	$fisio    = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%FISIO%'
+								");
+	$ambulan  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%AMBUL%'
+								");
+	$admin    = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%ADMIN%'
+								");
+
+	$obat = getFromTable("select sum(jumlah) as jumlah " .
+					"from rs00005 where reg='" . $row1["reg"] . "' AND is_karcis='N' AND is_obat='Y' AND kasir in ('IGD','RJN','RJL','RIN') " .
+					"AND layanan in ('99997', '99995', '320RJ_SWD','320RJ_IGD') ");
+					
+	$bhp = getFromTable("select sum(jumlah) as jumlah ".
+						 "from rs00005 where reg='".$row1["reg"]."' AND is_karcis='N' AND is_obat='N' AND kasir in ('IGD','RJN','RJL','RIN') ".
+						 "AND layanan in ('333') ");
+					
+	$paket = getFromTable("select sum(jumlah) as jumlah ".
+						 "from rs00005 where reg='".$row1["reg"]."' AND is_karcis='N' AND is_obat='N' AND kasir in ('IGD','RJN','RJL','RIN') ".
+						 "AND layanan in ('888') ");
+						 
+	$lain  = getFromTable("  select sum(a.tagihan) as jumlah 
+								from rs00008 a
+								left join rs00034 b on b.id=a.item_id::numeric
+								left join rs00001 c on c.tc = b.sumber_pendapatan_id and c.tt='SBP'  
+								where a.no_reg='".$row1["reg"]."' AND (a.trans_type='LTM') and c.tdesc like '%lain%'
+								");
+
+
+	//$total = $lain + $akomodasi + $karcis + $tindakan + $visite + $konsul + $alat + $laborat + $radiologi + $usg + $oksigen + $fisio + $ambulan + $admin + ($obat-$obatReturn) + $bhp + $paket;
+
+	
+}
+?>

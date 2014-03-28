@@ -1,0 +1,517 @@
+<?php // Agung Sunandar
+
+session_start();
+$PID = "320RJ";
+
+require_once("../lib/dbconn.php");
+require_once("../lib/querybuilder.php");
+require_once("../lib/class.PgTrans.php");
+
+$tokit = pg_query("select nextval('rs00008_seq_group')");
+pg_query("select nextval('kasir_seq')");
+
+$jenistrans = $_POST["jenis_transaksi"];
+
+$tr = new PgTrans;
+$tr->PgConn = $con;
+
+
+// LAYANAN TINDAKAN MEDIS DAN PEMBAGIAN JASA MEDIS
+if (is_array($_SESSION["layanan"]) and $_GET["e"]!="byr") {
+   if ($_POST["sub"] == "byr") {
+		$v1 = ",is_bayar,no_kwitansi";
+		$v2 = ",'Y',currval('rs88888_seq')";
+   } else {
+		$v1 = "";
+		$v2 = "";
+   }
+
+
+   foreach ($_SESSION["layanan"] as $v) {
+        $total += $v["total"];
+
+   }
+
+   $kodepoli = getFromTable("select poli from rs00006 where id = '".$_POST["rg"]."'");
+   if ($_POST[tt] == "igd") {
+      $loket = "IGD";
+   } elseif ($_POST[tt] == "swd") {
+      $loket = "RJL";
+   } elseif ($_POST[tt] == "cdm") {
+      $loket = "CDM";
+   } else {
+      $loket = "ASK";
+   }
+
+   if ($_SESSION[gr] == "laborat") {
+      $kodepoli = "12651";
+      $PID = "LAB";      
+   } elseif ($_SESSION[gr] == "radiologi") {
+      $kodepoli = "13111";
+      $PID = "RAD";
+   }
+
+
+   // insert to rs00005
+   pg_query("INSERT INTO rs00005 VALUES( currval('kasir_seq'), '".$_POST["rg"]."', ".
+        "CURRENT_DATE, '$loket', 'N', 'N', $kodepoli, $total, 'N')") or die("eror atuh");
+
+    // insert to rs00008
+    foreach ($_SESSION["layanan"] as $v) {
+        if ($v["nip"]) {
+           $dokter = $v["nip"];
+        } else {
+           $dokter = 0;
+        }
+
+        $tr->addSQL(
+            "insert into rs00008 (" .
+                "id,            trans_type,  trans_form, trans_group, tanggal_trans, " .
+                "tanggal_entry, waktu_entry, no_reg,     item_id,     referensi, ".
+                "qty,           harga,       tagihan,    pembayaran, no_kwitansi ".
+            ") values (".
+                "nextval('rs00008_seq'), 'LTM', '$PID', currval('rs00008_seq_group'), CURRENT_DATE, " .
+                "CURRENT_DATE, CURRENT_TIME, '".$_POST["rg"]."', '".$v["id"]."', '', " .
+                $v["jumlah"].",".$v["harga"].",".$v["total"].", 0, $dokter)"
+        );
+    }
+
+    $r1 = pg_query($con,
+        "select * from rs00020 where pembagian_jasa_medis_id = '".$_SESSION["pjmtype"]."'");
+    while ($d1 = pg_fetch_object($r1)) {
+        if (is_array($_SESSION["pjm"]["$d1->id"])) {
+            foreach ($_SESSION["pjm"]["$d1->id"] as $v) {
+                if ($d1->is_person == "Y" && $v["id"] != "---") {
+                    $tr->addSQL(
+                        "insert into rs00033 (" .
+                            "id, trans_group, pembagian_jasa_medis_id, nip " .
+                        ") values (" .
+                            "nextval('rs00033_seq'), currval('rs00008_seq_group'),'$d1->id', '".$v["id"]."')"
+                    );
+
+                    $rs00027_id = getFromTable(
+            "select rs00027_id ".
+	    "from rs00017  ".
+	    "where nip='".$v["id"]."' ");
+
+                    $rs00017_id = getFromTable(
+            "select id ".
+	    "from rs00017  ".
+	    "where nip='".$v["id"]."' ");
+
+                    $jmf_id = getFromTable(
+            "select jabatan_medis_fungsional_id ".
+	    "from rs00017  ".
+	    "where nip='".$v["id"]."' ");
+
+            //echo "xx: $rs00027_id , $rs00017_id , $jmf_id";
+
+                    // angka kredit insert to table (Catatan Medik)
+
+	            if ($_SESSION[gr] == "ri" || $_SESSION[gr] == "rj" || $_SESSION[gr] == "igd") {
+
+                    $tr->addSQL(
+                        "insert into rs00030 (" .
+                            "id, rs00025_id, rs00027_id, rs00017_id " .
+                        ") values (" .
+                            "nextval('rs00030_seq'), 23, $rs00027_id, '$rs00017_id')"
+                    );
+
+                    if ($jmf_id == "001") {
+                    //echo "xxx".$v[id];
+                    $tr->addSQL(
+                        "insert into rs00030 (" .
+                            "id, rs00025_id, rs00027_id, rs00017_id " .
+                        ") values (" .
+                            "nextval('rs00030_seq'), 9, $rs00027_id, '$rs00017_id')"
+                    );
+
+                    } elseif ($jmf_id == "002") {
+
+                    $tr->addSQL(
+                        "insert into rs00030 (" .
+                            "id, rs00025_id, rs00027_id, rs00017_id " .
+                        ") values (" .
+                            "nextval('rs00030_seq'), 1, $rs00027_id, $rs00017_id)"
+                    );
+
+                    }
+
+
+                    } else {
+
+                    $tr->addSQL(
+                        "insert into rs00030 (" .
+                            "id, rs00025_id, rs00027_id, rs00017_id " .
+                        ") values (" .
+                            "nextval('rs00030_seq'), 24, $rs00027_id, $rs00017_id)"
+                    );
+
+                    // visite
+                    $tr->addSQL(
+                        "insert into rs00030 (" .
+                            "id, rs00025_id, rs00027_id, rs00017_id " .
+                        ") values (" .
+                            "nextval('rs00030_seq'), 61, $rs00027_id, $rs00017_id)"
+                    );
+
+
+
+                    }
+
+
+                }
+            }
+        }
+    }
+    pg_free_result($r1);
+}
+// URAIAN DIAGNOSA
+if (isset($_SESSION["s2note"]) and $_GET["e"]!="byr") {
+    $tr->addSQL(
+        "insert into rs00008 (" .
+            "id,            trans_type,  trans_form, trans_group, tanggal_trans, " .
+            "tanggal_entry, waktu_entry, no_reg,     item_id,     referensi, ".
+            "qty,           harga,       tagihan,    pembayaran ".
+        ") values (".
+            "nextval('rs00008_seq'), 'DIA', '$PID', currval('rs00008_seq_group'), CURRENT_DATE, " .
+            "CURRENT_DATE, CURRENT_TIME, '".$_POST["rg"]."', '', '', " .
+            "0,0,0,0)"
+    );
+    $tr->addSQL(
+        "insert into rs00009 (trans_id, description) " .
+        "values (currval('rs00008_seq'), '".$_SESSION["s2note"]."')");
+}
+
+// ICD
+if (is_array($_SESSION["icd"]) and $_GET["e"]!="byr") {
+    foreach ($_SESSION["icd"] as $v) {
+        $tr->addSQL(
+            "insert into rs00008 (" .
+                "id,            trans_type,  trans_form, trans_group, tanggal_trans, " .
+                "tanggal_entry, waktu_entry, no_reg,     item_id,     referensi, ".
+                "qty,           harga,       tagihan,    pembayaran ".
+            ") values (".
+                "nextval('rs00008_seq'), 'ICD', '$PID', currval('rs00008_seq_group'), CURRENT_DATE, " .
+                "CURRENT_DATE, CURRENT_TIME, '".$_POST["rg"]."', '".$v["id"]."', '', " .
+                "0,0,0,0)"
+        );
+    }
+}
+
+// RESEP  /  OBAT
+if (is_array($_SESSION["obat"]) and $_GET["e"]!="byr" ) {
+
+    // tokit punya
+   foreach ($_SESSION["obat"] as $v) {
+        $total += $v["total"];
+
+   }
+
+   $kodepoli = getFromTable("select poli from rs00006 where id = '".$_POST["rg"]."'");
+   $cek_karcis = getFromTable("select jumlah from rs00005 where reg = '".$_POST["rg"]."' and is_karcis = 'Y'");
+
+   if ($_POST[tt] == "igd") {
+      $loket = "IGD";
+	  $PID1 = "320RJ_IGD";
+   } elseif ($_POST[tt] == "swd") {
+      $loket = "RJL";
+	  $PID1 = "320RJ_SWD";
+   } elseif ($_POST[tt] == "cdm") {
+      $loket = "CDM";
+	  $PID1 = "320RJ_CDM";
+   } else {
+      $loket = "ASK";
+	  $PID1 = "320RJ_ASK";
+   }
+   
+   
+   
+   pg_query("INSERT INTO rs00005 VALUES( currval('kasir_seq'), '".$_POST["rg"]."', ".
+        "CURRENT_DATE, '$loket', 'Y', 'N', '$PID1', $total, 'N','".$_SESSION["uid"]."')") or die("eror atuh");
+   // end tokit punya
+   
+   // potongan obat karena obat paket
+   $cekPotObat = getFromTable("select jumlah from rs00005 ".
+			"where reg = '".$_POST["rg"]."' and layanan = 99995 ");
+   $totalObat = getFromTable("select sum(jumlah) from rs00005 ".
+			"where reg = '".$_POST["rg"]."'".
+			"	and is_obat = 'Y' and layanan != 99995");
+   if ($cek_karcis == 4500) {
+	// sfdn, 27-12-2006 --> dgn. pertimbangan kondisional (cocok untuk RS Karanganyar, maka nilai
+	// $xcek_karcis dijadikan 0
+	$xcek_karcis = 0;
+      //$xcek_karcis = -2000;
+	// --- eof 27-12-2006 ---
+      if ($totalObat > 2000) {
+
+   if ($cekPotObat < 1) {
+      pg_query("insert into rs00005 (id, reg, tgl_entry, kasir, ".
+		"is_obat, is_karcis, layanan, jumlah, is_bayar) ".
+      		"values (nextval('kasir_seq'), '".$_POST["rg"]."', ".
+		"CURRENT_DATE, '$loket', 'Y', 'N', '$PID1', $xcek_karcis, 'N' )") or die("pot obat err");
+   	}
+
+      }
+
+   } elseif ($cek_karcis == 9000) {
+	// sfdn, 27-12-2006 --> dgn. pertimbangan kondisional (cocok untuk RS Karanganyar, 
+	//maka nilai
+	// $xcek_karcis dijadikan 0
+	$xcek_karcis = 0;
+        //$xcek_karcis = -4000;
+	// --- eof 27-12-2006 ---
+      if ($totalObat > 4000) {
+   if ($cekPotObat < 1) {
+      pg_query("insert into rs00005 (id, reg, tgl_entry, kasir, ".
+		"is_obat, is_karcis, layanan, jumlah, is_bayar) ".
+      		"values (nextval('kasir_seq'), '".$_POST["rg"]."', ".
+		"CURRENT_DATE, '$loket', 'Y', 'N', '$PID1', $xcek_karcis, 'N' )") or die("pot obat err2");
+   	}
+
+      }
+
+   }
+
+   //echo "$PID - $_POST[rg] - ".$v["id"]." - ".$v["jumlah"]." - ".$v["harga"]." - total: $total"; exit();
+    foreach ($_SESSION["obat"] as $v) {
+        $tr->addSQL(
+            "insert into rs00008 (" .
+                "id,            trans_type,  trans_form, trans_group, tanggal_trans, " .
+                "tanggal_entry, waktu_entry, no_reg,     item_id,     referensi, ".
+                "qty,           harga,       tagihan,    pembayaran,user_id ".
+            ") values (".
+                "nextval('rs00008_seq'), 'OB1', '$PID1', currval('rs00008_seq_group'), CURRENT_DATE, " .
+                "CURRENT_DATE, CURRENT_TIME, '".$_POST["rg"]."', '".$v["id"]."', '".$v["ppn"]."', " .
+                "'".$v["jumlah"]."',".$v["harga"].",".$v["total"].",0,'".$_SESSION["uid"]."')"
+        );
+
+
+        $tr->addSQL("update rs00016 set qty_keluar = qty_keluar + ".$v["jumlah"].
+            " where obat_id = '".$v["id"]."'");
+
+		if ($_POST["tt"]=="igd"){
+		$tr->addSQL("update rs00016a set qty_interne = qty_interne - ".$v["jumlah"].
+            " where obat_id = '".$v["id"]."'");
+		}elseif ($_POST["tt"]=="swd"){
+		$tr->addSQL("update rs00016a set qty_ri = qty_ri - ".$v["jumlah"].
+            " where obat_id = '".$v["id"]."'");
+		}elseif ($_POST["tt"]=="cdm"){
+		$tr->addSQL("update rs00016a set qty_jiwa = qty_jiwa - ".$v["jumlah"].
+            " where obat_id = '".$v["id"]."'");
+		}elseif ($_POST["tt"]=="ask"){
+		$tr->addSQL("update rs00016a set qty_kebid = qty_kebid - ".$v["jumlah"].
+            " where obat_id = '".$v["id"]."'");
+		}
+    }
+}
+
+//==============
+// RACIKAN
+if (is_array($_SESSION["racikan"]) and $_GET["e"]!="byr") {
+
+    // tokit punya
+   foreach ($_SESSION["racikan"] as $v) {
+        $total += $v["total1"];
+
+   }
+
+if ($_POST[tt] == "igd") {
+      $loket = "IGD";
+	  $PID1 = "320RJ_IGD";
+   } elseif ($_POST[tt] == "swd") {
+      $loket = "RJL";
+	  $PID1 = "320RJ_SWD";
+   } elseif ($_POST[tt] == "cdm") {
+      $loket = "CDM";
+	  $PID1 = "320RJ_CDM";
+   } else {
+      $loket = "ASK";
+	  $PID1 = "320RJ_ASK";
+   }
+
+   
+   pg_query("INSERT INTO rs00005 VALUES( currval('kasir_seq'), '".$_POST["rg"]."', ".
+        "CURRENT_DATE, '$loket', 'Y', 'N', '$PID1', $total, 'N')") or die("eror atuh");
+   // end tokit punya
+   
+   // potongan obat karena obat paket
+   $cekPotObat = getFromTable("select jumlah from rs00005 ".
+			"where reg = '".$_POST["rg"]."' and layanan = 99995 ");
+   $totalObat = getFromTable("select sum(jumlah) from rs00005 ".
+			"where reg = '".$_POST["rg"]."'".
+			"	and is_obat = 'Y' and layanan != 99995");
+   if ($cek_karcis == 4500) {
+	// sfdn, 27-12-2006 --> dgn. pertimbangan kondisional (cocok untuk RS Karanganyar, maka nilai
+	// $xcek_karcis dijadikan 0
+	$xcek_karcis = 0;
+      //$xcek_karcis = -2000;
+	// --- eof 27-12-2006 ---
+      if ($totalObat > 2000) {
+
+   if ($cekPotObat < 1) {
+      pg_query("insert into rs00005 (id, reg, tgl_entry, kasir, ".
+		"is_obat, is_karcis, layanan, jumlah, is_bayar) ".
+      		"values (nextval('kasir_seq'), '".$_POST["rg"]."', ".
+		"CURRENT_DATE, '$loket', 'Y', 'N', '$PID1', $xcek_karcis, 'N' )") or die("pot obat err");
+   	}
+
+      }
+
+   } elseif ($cek_karcis == 9000) {
+	// sfdn, 27-12-2006 --> dgn. pertimbangan kondisional (cocok untuk RS Karanganyar, 
+	//maka nilai
+	// $xcek_karcis dijadikan 0
+	$xcek_karcis = 0;
+        //$xcek_karcis = -4000;
+	// --- eof 27-12-2006 ---
+      if ($totalObat > 4000) {
+   if ($cekPotObat < 1) {
+      pg_query("insert into rs00005 (id, reg, tgl_entry, kasir, ".
+		"is_obat, is_karcis, layanan, jumlah, is_bayar) ".
+      		"values (nextval('kasir_seq'), '".$_POST["rg"]."', ".
+		"CURRENT_DATE, '$loket', 'Y', 'N', 99995, $xcek_karcis, 'N' )") or die("pot obat err2");
+   	}
+
+      }
+
+   }
+
+   //echo "$PID - $_POST[rg] - ".$v["id"]." - ".$v["jumlah"]." - ".$v["harga"]." - total: $total"; exit();
+    foreach ($_SESSION["racikan"] as $v) {
+        $tr->addSQL(
+            "insert into rs00008 (" .
+                "id,            trans_type,  trans_form, trans_group, tanggal_trans, " .
+                "tanggal_entry, waktu_entry, no_reg,     item_id,     referensi, ".
+                "qty,           harga,       tagihan,    pembayaran,user_id ".
+            ") values (".
+                "nextval('rs00008_seq'), 'RCK', '$PID1', currval('rs00008_seq_group'), CURRENT_DATE, " .
+                "CURRENT_DATE, CURRENT_TIME, '".$_POST["rg"]."', '".$v["id1"]."', '".$v["ppn"]."', " .
+                "'".$v["jumlah1"]."',".$v["harga1"].",".$v["total1"].",0,'".$_SESSION["uid"]."')"
+        );
+
+
+        $tr->addSQL("update rs00016 set qty_keluar = qty_keluar + ".$v["jumlah1"].
+            " where obat_id = '".$v["id1"]."'");
+
+		if ($_POST["tt"]=="igd"){
+		$tr->addSQL("update rs00016a set qty_interne = qty_interne - ".$v["jumlah1"].
+            " where obat_id = '".$v["id1"]."'");
+		}elseif ($_POST["tt"]=="swd"){
+		$tr->addSQL("update rs00016a set qty_ri = qty_ri - ".$v["jumlah1"].
+            " where obat_id = '".$v["id1"]."'");
+		}elseif ($_POST["tt"]=="cdm"){
+		$tr->addSQL("update rs00016a set qty_jiwa = qty_jiwa - ".$v["jumlah1"].
+            " where obat_id = '".$v["id1"]."'");
+		}elseif ($_POST["tt"]=="ask"){
+		$tr->addSQL("update rs00016a set qty_kebid = qty_kebid - ".$v["jumlah1"].
+            " where obat_id = '".$v["id1"]."'");
+		}
+    }
+}
+
+// PEMBAYARAN
+if ($_GET["e"]=="byr") {
+
+		pg_query("insert into rs00005 ".
+			" values(nextval('kasir_seq'),'".$_GET[rg]."',CURRENT_DATE,'BYR','Y','N',0,$_GET[bayar],'Y')");
+		
+		$sql1=("update rs00006 set is_bayar = 'Y' where id = '".$_GET[rg]."' ");
+		$sql2=("insert into rs00005 values(nextval('kasir_seq'),'".$_GET[rg]."',CURRENT_DATE,'POT','Y','N',0,$_GET[keringanan],'Y')");
+		$sql3=("update rs00008 set is_bayar = 'Y' where no_reg = '".$_GET[rg]."' and trans_type in ('OB1','RCK')");
+		pg_query($con, $sql1);	
+		pg_query($con, $sql2);
+		pg_query($con, $sql3);
+}
+
+if ($_POST['act'] == "edit") { 	
+			pg_query("update rs00008 set item_id='".$_POST["nama_relasi"]."', no_kwitansi='".$_POST["nama_dokter"]."', konsulen='".$_POST["nama_dokter_konsulen"]."', iter_resep='".$_POST["iter_resep"]."' where no_reg='".$_POST['rg']."' and trans_type='OBM'");
+			header("Location: ../index2.php?p=320RJ&tt=".$_POST[tt]."&rg=".$_POST[rg]."&sub=obat&nama_relasi=".$_POST[nama_relasi]."&nama_dokter=".$_POST[nama_dokter]."&nama_dokter_konsulen=".$_POST[nama_dokter_konsulen]."&iter_resep=".$_POST[iter_resep]);
+		   	exit;
+	}
+
+if ($_POST['act'] == "new2") {
+
+$tr = new PgTrans;
+$tglhariini = date("Ymd", time());
+$hari =  date('d');
+$bulan =  date('m');
+//$format = $bulan.''.$hari;
+
+if(getFromTable("SELECT rawat_inap FROM rs00006 WHERE id='".$_GET['rg']."'")=='Y'){
+		$prefix = 'RI';
+}{
+		$prefix = 'RJ';
+}
+//$format = $bulan.''.$hari;
+$format = $prefix.'-%%'.$hari.$bulan;
+//$tglhari = date("md", time());
+$tglhari = date("dm", time());
+//$id_maxtgl = getFromTable("select max(nmr_transaksi) from rs00008 where nmr_transaksi LIKE '$format%' AND trans_type='OBM'");
+$id_maxtgl = getFromTable("select max(nmr_transaksi) from rs00008 where nmr_transaksi LIKE '$format' AND trans_type='OBM'");
+//$lastNoUruttgl = substr($id_maxtgl, strlen($id_maxtgl)-3, strlen($id_maxtgl)-7);
+$lastNoUruttgl = substr($id_maxtgl, 6,4);
+//echo "select max(nmr_transaksi) from rs00008 where nmr_transaksi LIKE '$format' AND trans_type='OBM'";exit;
+if($lastNoUruttgl != $tglhari){
+	$nextNoUrut ='001';
+	//$nextNoTransaksi = $bulan.''.$hari.sprintf('%03s', $nextNoUrut);
+	$nextNoTransaksi = $prefix.'-'.sprintf('%03s', $nextNoUrut).$hari.$bulan;
+}else{
+	if($jenistrans=='001'){
+	$id_max = getFromTable("select max(nmr_transaksi) from rs00008 where nmr_transaksi LIKE '$format' AND trans_type='OBM'");
+	$lastNoTransaksi = $id_max;
+	$lastNoUrut = substr($lastNoTransaksi, 3, 3);
+	$nextNoUrut = ($lastNoUrut+1);
+	//$nextNoTransaksi = $bulan.''.$hari.sprintf('%03s', $nextNoUrut);
+	$nextNoTransaksi = $prefix.'-'.sprintf('%03s', $nextNoUrut).$hari.$bulan;
+	}else if($jenistrans=='002'){
+	$id_max = getFromTable("select max(nmr_transaksi) from rs00008 where nmr_transaksi LIKE '$format' AND trans_type='OBM' and no_reg='".$_POST["rg"]."'");
+	$lastNoTransaksi = $id_max;
+	$lastNoUrut = substr($lastNoTransaksi, 3, 3);
+	$nextNoUrut = ($lastNoUrut+0);
+	$nextNoTransaksi = $prefix.'-'.sprintf('%03s', $nextNoUrut).$hari.$bulan;
+	}
+}
+
+	$SQLa="insert into rs00008 (" .
+                "id,            trans_type,  trans_form, trans_group, tanggal_trans, " .
+                "tanggal_entry, waktu_entry, no_reg,     item_id,     referensi, ".
+                "qty,           harga,       tagihan,    pembayaran,no_kwitansi,user_id,nmr_transaksi,jenis_transaksi,konsulen,iter_resep ".
+            ") values (".
+                "nextval('rs00008_seq'), 'OBM', '$PID1', currval('rs00008_seq_group'), CURRENT_DATE, " .
+                "CURRENT_DATE, CURRENT_TIME, '".$_POST["rg"]."', '".$_POST["nama_relasi"]."', 0, " .
+                "0,0,0,0,'".$_POST["nama_dokter"]."','".$_SESSION["uid"]."','$nextNoTransaksi','".$_POST["jenis_transaksi"]."','".$_POST["nama_dokter_konsulen"]."','".$_POST["iter_resep"]."')";
+//echo $SQLa.'--'.$nextNoUrut ;exit;
+	pg_query($con, $SQLa);
+
+			header("Location: ../index2.php?p=320RJ&tt=".$_POST[tt]."&rg=".$_POST[rg]."&sub=obat&nama_relasi=".$_POST[nama_relasi]."&jenis_transaksi=".$_POST["jenis_transaksi"]."&nama_dokter=".$_POST[nama_dokter]."&nama_dokter_konsulen=".$_POST[nama_dokter_konsulen]."&iter_resep=".$_POST[iter_resep]);
+			exit;
+	}
+//--
+if ($tr->execute()) {
+
+
+    unset($_SESSION["layanan"]);
+    unset($_SESSION["s2note"]);
+    unset($_SESSION["icd"]);
+    unset($_SESSION["obat"]);
+	unset($_SESSION["racikan"]);
+
+    if ($_SESSION[gr] == "laborat" || $_SESSION[gr] == "radiologi" ) {
+	header("Location: ../index2.php?p=320RJ&rg=".$_POST[rg]."&sub=".$_POST[sub]);
+
+    } else {
+		if ($_GET["e"]=="byr") {
+        header("Location: ../index2.php?p=320RJ&tt=".$_GET[tt]."&rg=".$_GET[rg]."&sub=".$_GET[sub]);
+		}else{
+		header("Location: ../index2.php?p=320RJ&tt=".$_POST[tt]."&rg=".$_POST[rg]."&sub=".$_POST[sub]);
+		}
+    }
+    
+    exit;
+} else {
+    echo $tr->ErrMsg;
+	exit;
+}
+
+?>
